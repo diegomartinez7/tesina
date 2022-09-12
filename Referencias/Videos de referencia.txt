@@ -1,0 +1,9 @@
+Curso Python para Principiantes
+https://www.youtube.com/watch?v=chPhlsHoEPo
+
+Diagramas de Clases y sus Relaciones
+https://www.youtube.com/watch?v=yyADWGYsiUM
+
+UML - Diagrama de Clases (Elementos)
+https://www.youtube.com/watch?v=xUaYesGYbVw
+
