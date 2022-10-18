@@ -1,8 +1,12 @@
-from tkinter import *
+#from tkinter import *
+import flet
+from flet import *
 from tkinter import font as tkfont
 from tkinter import ttk
 import helpers
 import splashscreen
+from Views import LoginVista, EntrenadorMenuEquipos
+
 
 # ----------------------------------------------------------------------------------------------------#
 #                                            APLICACIÓN                                               #
@@ -28,5 +32,23 @@ def start():
 
     root.mainloop()
 
-splashscreen.startSplash_Screen()
-start()
+
+def configuracionInicial(page: Page):
+    page.fonts = {
+        "Nunito": "/fonts/Nunito-Regular.ttf"
+    }
+
+    page.theme = theme.Theme(font_family = "Nunito")
+    page.theme_mode = "light"
+    page.title = "SSE Voley"
+    page.bgcolor = "#D9D9D9"
+    page.update()
+
+
+def main(page: Page):
+    configuracionInicial(page)
+
+    LoginVista.login(page)
+
+
+flet.app(target=main, assets_dir="resources")
