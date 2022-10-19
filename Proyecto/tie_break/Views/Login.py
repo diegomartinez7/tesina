@@ -3,6 +3,7 @@ from flet import colors, icons, margin, padding
 from flet.buttons import RoundedRectangleBorder
 
 from Views import EntrenadorMenuEquipos
+from Views import Registro
 
 
 def login(page: Page):
@@ -20,6 +21,9 @@ def prepararPagina(page: Page):
 def inicializarComponentes(page: Page):
     def iniciarSesion(e):
         EntrenadorMenuEquipos.menuEquipos(page)
+
+    def registrarse(e):
+        Registro.registro(page)
 
     tituloSistema = Text(
         value="SSE Voley",
@@ -76,7 +80,8 @@ def inicializarComponentes(page: Page):
             value="Registrarse",
             size=18,
             color="#001f60"
-        )
+        ),
+        on_click=registrarse
     )
     buttonInfo = IconButton(
         icon=icons.INFO_OUTLINED,

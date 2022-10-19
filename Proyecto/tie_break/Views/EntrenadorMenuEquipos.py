@@ -2,7 +2,7 @@ from flet import *
 from flet import padding, icons
 from flet.buttons import RoundedRectangleBorder
 
-from Views import LoginVista
+from Views import Login
 
 nombreEntrenador = "Alejandro González"
 
@@ -21,7 +21,7 @@ def prepararPagina(page: Page):
 
 def inicializarComponentes(page: Page):
     def cerrarSesion(e):
-        LoginVista.login(page)
+        Login.login(page)
 
     tituloSistema = Text(
         value="SSE Voley",

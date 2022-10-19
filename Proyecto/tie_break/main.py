@@ -5,7 +5,7 @@ from tkinter import font as tkfont
 from tkinter import ttk
 import helpers
 import splashscreen
-from Views import LoginVista, EntrenadorMenuEquipos
+from Views import Login, EntrenadorMenuEquipos
 
 
 # ----------------------------------------------------------------------------------------------------#
@@ -48,7 +48,7 @@ def configuracionInicial(page: Page):
 def main(page: Page):
     configuracionInicial(page)
 
-    LoginVista.login(page)
+    Login.login(page)
 
 
 flet.app(target=main, assets_dir="resources")
