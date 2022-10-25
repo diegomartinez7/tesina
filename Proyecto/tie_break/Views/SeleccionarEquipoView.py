@@ -8,75 +8,30 @@ class SeleccionarEquipoVista(UserControl):
     def __init__(self, page: Page):
         super().__init__()
         self.pagina = page
-        self.listaEquipos = [
-            {
-                "nombre": "Gallos UAA",
-                "jugadores": [
-                    {
-                        "nombre": "Sergio Ruvalcaba Lozano",
-                        "numero": 4,
-                        "capitan": True,
-                        "posicion": "Acomodador"
-                    },
-                    {
-                        "nombre": "Iván Alejandro Luna Hermosillo",
-                        "numero": 1,
-                        "capitan": False,
-                        "posicion": "Libero"
-                    },
-                    {
-                        "nombre": "Eduardo Velazco",
-                        "numero": 6,
-                        "capitan": False,
-                        "posicion": "Banda"
-                    }
-                ]
-            },
-            {
-                "nombre": "Aguilas Reales UPA",
-                "jugadores": [
-                    {
-                        "nombre": "Benjamín Esqueda Medrano",
-                        "numero": 10,
-                        "capitan": True,
-                        "posicion": "Banda"
-                    },
-                    {
-                        "nombre": "Daichi Guerrero",
-                        "numero": 5,
-                        "capitan": False,
-                        "posicion": "Acomodador"
-                    }
-                ]
-            }
-        ]
-        # self.equipoSeleccionado = {
-        #     "nombre": None,
-        #     "jugadores": [{
-        #         "nombre": None,
-        #         "numero": None,
-        #         "capitan": None,
-        #         "posicion": None
-        #     }]
-        # }
+        self.listaEquipos = None
+        self.equipoSeleccionado = None
+        self.nombreEquipo = None
+        self.tituloNombreEquipo = None
+        self.filasJugadores = []
+        self.columnListaJugadores = None
+
+    def build(self):
+        self.expand = True
+        self.listaEquipos = self.obtenerEquipos()
         self.equipoSeleccionado = self.listaEquipos[0]
-        self.nombreEquipo = self.equipoSeleccionado.get("nombre")
+        self.nombreEquipo = self.equipoSeleccionado
         self.tituloNombreEquipo = Text(
             value=f"{self.nombreEquipo}",
             color="#D9D9D9",
             size=32,
             font_family="Nunito"
         )
-        self.filasJugadores = []
         self.obtenerContenedoresJugadores()
         self.columnListaJugadores = Column(
             controls=self.filasJugadores,
             scroll="auto",
             expand=True
         )
-
-    def build(self):
-        self.expand = True
         self.obtenerContenedoresEquipos()
         return self.inicializarComponentes()
 
@@ -124,6 +79,21 @@ class SeleccionarEquipoVista(UserControl):
             content_padding=10
         )
 
+        buttonCerrarSesion = ElevatedButton(
+            content=Row(
+                controls=[
+                    Icon(name=icons.KEYBOARD_RETURN_ROUNDED, color="#D9D9D9", size=22),
+                    Text(value="Regresar", color="#D9D9D9", size=22)
+                ],
+                spacing=5
+            ),
+            width=150,
+            bgcolor="#001f60",
+            style=ButtonStyle(
+                shape=RoundedRectangleBorder(radius=12.5)
+            ),
+            on_click=self.regresar
+        )
         buttonSeleccionarEquipo = ElevatedButton(
             content=Text(
                 value="Seleccionar equipo",
@@ -156,13 +126,18 @@ class SeleccionarEquipoVista(UserControl):
             alignment=alignment.center_right,
             padding=10
         )
+        containerButtonCerrarSesion = Container(
+            content=buttonCerrarSesion,
+            alignment=alignment.center_left,
+            padding=10
+        )
 
         rowEquipoYBusqueda = Row(
             controls=[
                 containerTituloNombreEquipo,
                 containerInputBuscarJugador
             ],
-            expand=3,
+            expand=4,
             alignment="spaceBetween"
         )
         rowEncabezadoVista = Row(
@@ -190,6 +165,14 @@ class SeleccionarEquipoVista(UserControl):
         containerColumnListaDeEquipos = Container(
             content=columnListaDeEquipos,
             padding=padding.symmetric(10, 0),
+            expand=True
+        )
+
+        columnListaEquiposButtonCerrarSesion = Column(
+            controls=[
+                containerColumnListaDeEquipos,
+                containerButtonCerrarSesion
+            ],
             expand=2
         )
 
@@ -236,12 +219,12 @@ class SeleccionarEquipoVista(UserControl):
         containerColumnTablaJugadoresButtonSeleccionarEquipo = Container(
             content=columnTablaJugadoresButtonSeleccionarEquipo,
             bgcolor=colors.WHITE,
-            expand=3
+            expand=4
         )
 
         rowListaEquiposTablaJugadores = Row(
             controls=[
-                containerColumnListaDeEquipos,
+                columnListaEquiposButtonCerrarSesion,
                 containerColumnTablaJugadoresButtonSeleccionarEquipo
             ],
             expand=True,
@@ -268,7 +251,7 @@ class SeleccionarEquipoVista(UserControl):
             contenedoresEquipos.append(
                 Container(
                     content=Text(
-                        value=equipo.get("nombre"),
+                        value=equipo,
                         text_align="start",
                         size=28,
                         color="#001f60"
@@ -297,37 +280,51 @@ class SeleccionarEquipoVista(UserControl):
         }
 
         if not self.equipoSeleccionado:
-            self.equipoSeleccionado = equipoClickeado
-        elif not self.equipoSeleccionado.get("nombre") == equipoClickeado.get("nombre"):
-            self.equipoSeleccionado = equipoClickeado
+            self.equipoSeleccionado = equipoClickeado.get("nombre")
+        elif not self.equipoSeleccionado == equipoClickeado.get("nombre"):
+            self.equipoSeleccionado = equipoClickeado.get("nombre")
 
-        self.tituloNombreEquipo.value = self.equipoSeleccionado.get("nombre")
+        self.tituloNombreEquipo.value = self.equipoSeleccionado
         self.obtenerContenedoresJugadores()
         self.update()
 
     def obtenerContenedoresJugadores(self):
         self.filasJugadores.clear()
-        for jugador in self.equipoSeleccionado.get("jugadores"):
+        for jugador in self.obtenerJugadores(self.equipoSeleccionado):
             self.filasJugadores.append(
                 Container(
                     content=Row(
                         controls=[
                             Text(
-                                value=jugador.get("numero"),
+                                value=jugador.getNumero(),
                                 size=20,
                                 color="#001f60",
                                 expand=1,
                                 text_align="center"
                             ),
-                            Text(
-                                value=f"{jugador.get('nombre')} {' C' if jugador.get('capitan') else ''}",
-                                size=20,
-                                color="#001f60",
+                            Row(
+                                controls=[
+                                    Text(
+                                        value=f"{jugador.getNombre()}",
+                                        size=20,
+                                        color="#001f60",
+                                        text_align="center",
+                                        expand=True
+                                    ),
+                                    Text(
+                                        value=" C",
+                                        size=20,
+                                        color="#d50037",
+                                        text_align="center",
+                                        font_family="Nunito Bold",
+                                        tooltip="Capitán del Equipo"
+                                    ) if jugador.isCapitan() else Container(margin=0, padding=0, width=0)
+                                ],
                                 expand=3,
-                                text_align="center"
+                                vertical_alignment="center"
                             ),
                             Text(
-                                value=jugador.get("posicion"),
+                                value=jugador.getPosicion(),
                                 size=20,
                                 color="#001f60",
                                 expand=2,
@@ -355,11 +352,17 @@ class SeleccionarEquipoVista(UserControl):
                 )
             )
 
+    def obtenerEquipos(self):
+        from Controllers.SeleccionarEquipoControl import SeleccionarEquipoControlador
+        controlador = SeleccionarEquipoControlador(self.pagina)
+        return controlador.obtenerEquipos()
+
     def obtenerJugadores(self, nombreSeleccionado):
-        jugadores = []
+        from Controllers.SeleccionarEquipoControl import SeleccionarEquipoControlador
+        controlador = SeleccionarEquipoControlador(self.pagina)
+        return controlador.obtenerJugadores(nombreSeleccionado)
 
-        for equipo in self.listaEquipos:
-            if equipo.get("nombre") == nombreSeleccionado:
-                jugadores = equipo.get("jugadores")
-
-        return jugadores
+    def regresar(self, e):
+        from Controllers.SeleccionarEquipoControl import SeleccionarEquipoControlador
+        controlador = SeleccionarEquipoControlador(self.pagina)
+        controlador.regresar()

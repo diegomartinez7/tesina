@@ -38,10 +38,11 @@ from Controllers.LoginControl import LoginControlador
 
 def configuracionInicial(page: Page):
     page.fonts = {
-        "Nunito": "/fonts/Nunito-Regular.ttf"
+        "Nunito": "/fonts/Nunito-Regular.ttf",
+        "Nunito Bold": "/fonts/Nunito-Bold.ttf"
     }
 
-    page.theme = theme.Theme(font_family = "Nunito")
+    page.theme = theme.Theme(font_family="Nunito")
     page.theme_mode = "light"
     page.title = "SSE Voley"
     page.bgcolor = "#D9D9D9"
