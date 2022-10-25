@@ -1,4 +1,4 @@
-from Models.ActividadesPartido.ActividadPartido import ActividadPartido
+from Models.Entidades.ActividadesPartido.ActividadPartido import ActividadPartido
 
 
 class Cambio(ActividadPartido):

@@ -1,4 +1,4 @@
-from Models.AccionesPartido.AccionPartido import AccionPartido
+from Models.Entidades.AccionesPartido.AccionPartido import AccionPartido
 
 
 class Acomodo(AccionPartido):

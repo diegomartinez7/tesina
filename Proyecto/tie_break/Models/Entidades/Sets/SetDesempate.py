@@ -1,4 +1,4 @@
-from Models.Sets.Set import Set
+from Models.Entidades.Sets.Set import Set
 
 
 class SetDesempate(Set):

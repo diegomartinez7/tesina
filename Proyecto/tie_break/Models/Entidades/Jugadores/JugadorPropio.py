@@ -1,4 +1,4 @@
-from Models.Jugadores.Jugador import Jugador
+from Models.Entidades.Jugadores.Jugador import Jugador
 
 
 class JugadorPropio(Jugador):
