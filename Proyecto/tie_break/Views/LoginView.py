@@ -7,6 +7,31 @@ class LoginVista(UserControl):
     def __init__(self, page: Page):
         super().__init__()
         self.pagina = page
+        self.inputUsuario = TextField(
+            color="#001f60",
+            text_size=16,
+            border_radius=12.5,
+            width=400,
+            border_color=colors.WHITE,
+            focused_border_color="#001f60"
+        )
+        self.inputPassword = TextField(
+            password=True,
+            can_reveal_password=True,
+            color="#001f60",
+            text_size=16,
+            border_radius=12.5,
+            width=400,
+            border_color=colors.WHITE,
+            focused_border_color="#001f60"
+        )
+        self.labelMensajeError = Text(
+            value="Datos Inválidos",
+            color="#d50037",
+            size=16,
+            font_family="Nunito",
+            visible=False
+        )
 
     def build(self):
         self.expand = True
@@ -32,24 +57,6 @@ class LoginVista(UserControl):
             font_family="Nunito"
         )
 
-        inputUsuario = TextField(
-            color="#001f60",
-            text_size=16,
-            border_radius=12.5,
-            width=400,
-            border_color=colors.WHITE,
-            focused_border_color="#001f60"
-        )
-        inputPassword = TextField(
-            password=True,
-            can_reveal_password=True,
-            color="#001f60",
-            text_size=16,
-            border_radius=12.5,
-            width=400,
-            border_color=colors.WHITE,
-            focused_border_color="#001f60"
-        )
 
         buttonIniciarSesion = ElevatedButton(
             content=Text(
@@ -83,7 +90,7 @@ class LoginVista(UserControl):
         )
 
         containerInputUsuario = Container(
-            content=inputUsuario,
+            content=self.inputUsuario,
             bgcolor=colors.WHITE,
             border_radius=12.5
         )
@@ -94,9 +101,13 @@ class LoginVista(UserControl):
         )
 
         containerinputPassword = Container(
-            content=inputPassword,
+            content=self.inputPassword,
             bgcolor=colors.WHITE,
             border_radius=12.5
+        )
+
+        containerLabelMensajeError = Container(
+            content=self.labelMensajeError
         )
 
         containerButtonIniciarSesion = Container(
@@ -114,6 +125,7 @@ class LoginVista(UserControl):
             containerInputUsuario,
             containerLabelPassword,
             containerinputPassword,
+            containerLabelMensajeError,
             containerButtonIniciarSesion,
             buttonRegistrarse
         ], horizontal_alignment="center")
@@ -141,4 +153,32 @@ class LoginVista(UserControl):
     def clickIniciarSesion(self, e):
         from Controllers.LoginControl import LoginControlador
         controlador = LoginControlador(self.pagina)
-        controlador.iniciarSesion()
+
+        if self.inputUsuario.value == "" or self.inputPassword.value == "":
+            if self.inputUsuario.value == "":
+                self.errorUsuario()
+            if self.inputPassword.value == "":
+                self.errorPassword()
+            self.setMensajeError("¡Los datos no pueden estar vacíos!")
+        else:
+            if controlador.revisarCredenciales(self.inputUsuario.value, self.inputPassword.value):
+                self.update()
+                self.pagina.session.set("usuario", self.inputUsuario.value)
+                controlador.iniciarSesion()
+            else:
+                self.errorUsuario()
+                self.errorPassword()
+                self.setMensajeError("¡Datos de usuario incorrectos!")
+
+    def errorUsuario(self):
+        self.inputUsuario.border_color = colors.RED
+        self.update()
+
+    def errorPassword(self):
+        self.inputPassword.border_color = colors.RED
+        self.update()
+
+    def setMensajeError(self, mensaje):
+        self.labelMensajeError.value = mensaje
+        self.labelMensajeError.visible = True
+        self.update()

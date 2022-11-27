@@ -1,0 +1,2 @@
+class MenuSeleccionOCreacionModel(object):
+    pass

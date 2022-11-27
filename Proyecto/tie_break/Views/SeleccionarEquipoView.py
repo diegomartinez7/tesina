@@ -14,12 +14,28 @@ class SeleccionarEquipoVista(UserControl):
         self.tituloNombreEquipo = None
         self.filasJugadores = []
         self.columnListaJugadores = None
+        self.jugadorAEditar = None
+
+        self.dialogEditarJugador: AlertDialog = None
+
+        self.inputEditarNumero = TextField(max_length=3, text_size=14, content_padding=5, color="#001f60",
+                                      expand=1, border_radius=12.5,
+                                      counter_text=None, counter_style=TextStyle(size=0), border_width=0)
+        self.inputEditarNombre = TextField(text_size=14, content_padding=5, color="#001f60",
+                                      expand=4, border_radius=12.5,
+                                      counter_text="Hola", counter_style=TextStyle(size=0), border_width=0)
+        self.inputEditarPosicion = TextField(text_size=14, content_padding=5, color="#001f60",
+                                      expand=3, border_radius=12.5,
+                                      counter_text="Hola", counter_style=TextStyle(size=0), border_width=0)
+        self.inputEditarCapitan = Switch(on_change=self.inputEditarCapitanChanged)
+
+        self.inputEditarCapitanCambiado: bool = False
 
     def build(self):
         self.expand = True
         self.listaEquipos = self.obtenerEquipos()
         self.equipoSeleccionado = self.listaEquipos[0]
-        self.nombreEquipo = self.equipoSeleccionado
+        self.nombreEquipo = self.equipoSeleccionado.nombreEquipo
         self.tituloNombreEquipo = Text(
             value=f"{self.nombreEquipo}",
             color="#D9D9D9",
@@ -79,7 +95,7 @@ class SeleccionarEquipoVista(UserControl):
             content_padding=10
         )
 
-        buttonCerrarSesion = ElevatedButton(
+        buttonRegresar = ElevatedButton(
             content=Row(
                 controls=[
                     Icon(name=icons.KEYBOARD_RETURN_ROUNDED, color="#D9D9D9", size=22),
@@ -127,7 +143,7 @@ class SeleccionarEquipoVista(UserControl):
             padding=10
         )
         containerButtonCerrarSesion = Container(
-            content=buttonCerrarSesion,
+            content=buttonRegresar,
             alignment=alignment.center_left,
             padding=10
         )
@@ -251,7 +267,7 @@ class SeleccionarEquipoVista(UserControl):
             contenedoresEquipos.append(
                 Container(
                     content=Text(
-                        value=equipo,
+                        value=equipo.nombreEquipo,
                         text_align="start",
                         size=28,
                         color="#001f60"
@@ -274,23 +290,24 @@ class SeleccionarEquipoVista(UserControl):
         e.control.update()
 
     def containerEquipoOnClick(self, e):
-        equipoClickeado = {
-            "nombre": e.control.content.value,
-            "jugadores": self.obtenerJugadores(e.control.content.value)
-        }
+        equipoClickeado = self.equipoSeleccionado
+
+        for equipo in self.listaEquipos:
+            if e.control.content.value == equipo.nombreEquipo:
+                equipoClickeado = equipo
 
         if not self.equipoSeleccionado:
-            self.equipoSeleccionado = equipoClickeado.get("nombre")
-        elif not self.equipoSeleccionado == equipoClickeado.get("nombre"):
-            self.equipoSeleccionado = equipoClickeado.get("nombre")
+            self.equipoSeleccionado = equipoClickeado
+        elif not self.equipoSeleccionado.nombreEquipo == equipoClickeado.nombreEquipo:
+            self.equipoSeleccionado = equipoClickeado
 
-        self.tituloNombreEquipo.value = self.equipoSeleccionado
+        self.tituloNombreEquipo.value = self.equipoSeleccionado.nombreEquipo
         self.obtenerContenedoresJugadores()
         self.update()
 
     def obtenerContenedoresJugadores(self):
         self.filasJugadores.clear()
-        for jugador in self.obtenerJugadores(self.equipoSeleccionado):
+        for jugador in self.equipoSeleccionado.getJugadores():
             self.filasJugadores.append(
                 Container(
                     content=Row(
@@ -334,11 +351,15 @@ class SeleccionarEquipoVista(UserControl):
                                 controls=[
                                     IconButton(
                                         icon=icons.EDIT_NOTE,
-                                        icon_color="#ffa400"
+                                        icon_color="#ffa400",
+                                        on_click=self.abrirDialogEditarJugador,
+                                        data=jugador
                                     ),
                                     IconButton(
                                         icon=icons.DELETE,
-                                        icon_color="#d50037"
+                                        icon_color="#d50037",
+                                        on_click=self.borrarJugador,
+                                        data=jugador
                                     )
                                 ],
                                 expand=1
@@ -352,15 +373,108 @@ class SeleccionarEquipoVista(UserControl):
                 )
             )
 
+    def abrirDialogEditarJugador(self, e):
+        jugador = e.control.data
+
+        self.inputEditarNumero.hint_text = jugador.getNumero()
+        self.inputEditarNombre.hint_text = jugador.getNombre()
+        self.inputEditarPosicion.hint_text = jugador.getPosicion()
+        self.inputEditarCapitan.value = jugador.isCapitan()
+
+        self.inputEditarCapitanCambiado = False
+
+        self.dialogEditarJugador = AlertDialog(
+            modal=True,
+            title=Text("Editar Jugador", text_align="center", color="#001f60"),
+            content=Column(
+                controls=[
+                    Row(
+                        controls=[
+                            Text("No.", expand=1, text_align="center", color="#001f60", size=16),
+                            Text("Nombre", expand=4, text_align="center", color="#001f60", size=16),
+                            Text("Posición", expand=3, text_align="center", color="#001f60", size=16),
+                            Text("Capitán", text_align="center", color="#001f60", size=16)
+                        ]
+                    ),
+                    Row(
+                        controls=[
+                            self.inputEditarNumero,
+                            self.inputEditarNombre,
+                            self.inputEditarPosicion,
+                            self.inputEditarCapitan
+                        ]
+                    )
+                ],
+                height=75,
+                width=600
+            ),
+            actions=[
+                TextButton(content=Text("Aceptar", color="#00BC06"), on_click=self.dialogEditarJugadorAceptado,
+                           data=jugador),
+                TextButton(content=Text("Cancelar", color="#d50037"), on_click=self.dialogEditarJugadorCancelado)
+            ],
+            actions_alignment="center"
+        )
+        self.pagina.dialog = self.dialogEditarJugador
+        self.dialogEditarJugador.open = True
+        self.pagina.update()
+
+    def dialogEditarJugadorCancelado(self, e):
+        self.dialogEditarJugador.open = False
+        self.pagina.update()
+
+    def dialogEditarJugadorAceptado(self, e):
+        jugador = e.control.data
+
+        if (self.inputEditarNumero.value == "" and self.inputEditarNombre.value == ""
+                and self.inputEditarPosicion.value == "" and not self.inputEditarCapitanCambiado):
+            self.dialogError("No se hizo nigún cambio")
+        elif (self.inputEditarNumero.value == str(jugador.getNumero())
+                and self.inputEditarNombre.value == jugador.getNombre()
+                and self.inputEditarPosicion.value == jugador.getPosicion()
+                and not self.inputEditarCapitanCambiado):
+            self.dialogError("No se hizo nigún cambio")
+        else:
+            if not self.inputEditarNumero.value == "":
+                jugador.setNumero(int(self.inputEditarNumero.value))
+            if not self.inputEditarNombre.value == "":
+                jugador.setNombre(self.inputEditarNombre.value)
+            if not self.inputEditarPosicion.value == "":
+                jugador.setPosicion(self.inputEditarPosicion.value)
+            if self.inputEditarCapitanCambiado:
+                jugador.setCapitan(self.inputEditarCapitan.value)
+
+            self.dialogEditarJugador.open = False
+            self.pagina.update()
+            self.editarJugador(jugador)
+
+
+    def dialogError(self, msg: str):
+        self.dialogEditarJugador.title = Text("¡Error!", text_align="center", color="#d50037")
+        self.dialogEditarJugador.content = Text(msg, text_align="center", size=20)
+        self.dialogEditarJugador.actions = [
+            TextButton(content=Text("Aceptar", color="#001f60"), on_click=self.dialogEditarJugadorCancelado)
+        ]
+        self.pagina.update()
+
+    def inputEditarCapitanChanged(self, e):
+        self.inputEditarCapitanCambiado = not self.inputEditarCapitanCambiado
+
     def obtenerEquipos(self):
         from Controllers.SeleccionarEquipoControl import SeleccionarEquipoControlador
         controlador = SeleccionarEquipoControlador(self.pagina)
         return controlador.obtenerEquipos()
 
-    def obtenerJugadores(self, nombreSeleccionado):
-        from Controllers.SeleccionarEquipoControl import SeleccionarEquipoControlador
-        controlador = SeleccionarEquipoControlador(self.pagina)
-        return controlador.obtenerJugadores(nombreSeleccionado)
+    def borrarJugador(self, e):
+        print(e.control.data.id)
+        self.equipoSeleccionado.borrarJugador(e.control.data.id)
+        self.obtenerContenedoresJugadores()
+        self.update()
+
+    def editarJugador(self, jugador):
+        self.equipoSeleccionado.editarJugador(jugador)
+        self.obtenerContenedoresJugadores()
+        self.update()
 
     def regresar(self, e):
         from Controllers.SeleccionarEquipoControl import SeleccionarEquipoControlador

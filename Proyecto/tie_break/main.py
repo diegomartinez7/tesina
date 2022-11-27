@@ -6,9 +6,9 @@ from flet import *
 # import helpers
 # import splashscreen
 
-from Views import MenuSeleccionOCreacionView, SeleccionarEquipoView
-from Controllers.RegistroControl import RegistroControlador
 from Controllers.LoginControl import LoginControlador
+from Controllers.MenuEquipoControl import MenuEquipoControlador
+#from Views.MenuEquipoView import MenuEquipoVista
 
 
 # ----------------------------------------------------------------------------------------------------#
@@ -56,6 +56,13 @@ def configuracionInicial(page: Page):
 def main(page: Page):
     configuracionInicial(page)
     llamarLogin(page)
+
+    #equipoView = MenuEquipoVista(page)
+    #equipoView.setEquipoSeleccionado("Gallos UAA")
+    #page.add(equipoView)
+
+    # menuEquipo = MenuEquipoControlador(page)
+    # menuEquipo.iniciarVista()
 
 
 def llamarLogin(page):

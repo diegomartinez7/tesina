@@ -11,17 +11,21 @@ class MenuSeleccionOCreacionControlador(object):
     def iniciarVista(self):
         self.page.vertical_alignment = "center"
         self.page.add(self.vista)
+        print(self.page.session.get("usuario"))
 
     def seleccionarEquipo(self):
-        self.page.controls.pop()
-        self.page.update()
+        self.limpiarVista()
         from Controllers.SeleccionarEquipoControl import SeleccionarEquipoControlador
         seleccionar = SeleccionarEquipoControlador(self.page)
         seleccionar.iniciarVista()
 
     def cerrarSesion(self):
-        self.page.controls.pop()
-        self.page.update()
+        self.limpiarVista()
+        self.page.session.remove("usuario")
         from Controllers.LoginControl import LoginControlador
         login = LoginControlador(self.page)
         login.iniciarVista()
+
+    def limpiarVista(self):
+        self.page.controls.pop()
+        self.page.update()
