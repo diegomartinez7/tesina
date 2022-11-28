@@ -1,6 +1,7 @@
 from Models.Entidades.Jugadores.Jugador import Jugador
 from Models.Entidades.Competencia import Competencia
 
+from operator import attrgetter
 
 class Equipo:
     def __init__(self, id, nombreEquipo, categoria, rama, tipoEquipo, nombreEntidad, contrario):
@@ -24,6 +25,9 @@ class Equipo:
 
         self.setJugadores()
 
+    def getNombre(self):
+        return self.nombreEquipo
+
     def getJugadores(self):
         return self.jugadores
 
@@ -42,17 +46,43 @@ class Equipo:
             Jugador(11, "Alan Manuel Márquez Álvarez", "M", "Central", 18, False)
         ]
 
+    def insertarJugador(self, jugadorNuevo: Jugador):
+        self.jugadores.append(jugadorNuevo)
+        self.ordenarJugadores()
+        print("Jugador insertado")
+
     def borrarJugador(self, id):
         for jugador in self.jugadores:
             if jugador.id == id:
                 self.jugadores.remove(jugador)
                 print("Jugador eliminado")
+        self.ordenarJugadores()
 
     def editarJugador(self, jugadorEditado: Jugador):
         for i, jugador in enumerate(self.jugadores):
             if jugador.id == jugadorEditado.id:
                 self.jugadores[i] = jugadorEditado
                 print("Jugador editado")
+        self.ordenarJugadores()
+
+    def obtenerUltimoIdJugador(self):
+        id = len(self.jugadores) + 1
+        return id
+
+    def obtenerGeneroEquipo(self):
+        if self.rama == "Varonil":
+            return "M"
+        else:
+            return "F"
+
+    def ordenarJugadores(self):
+        self.jugadores.sort(key=lambda x: x.noJugador)
+
+    def checarJugadorRepetido(self, jugadorNuevo: Jugador):
+        for jugador in self.jugadores:
+            if jugador.getNumero() == jugadorNuevo.getNumero() or jugador.getNombre() == jugadorNuevo.getNombre():
+                return True
+        return False
 
     @classmethod
     def getJugadoresEquipo(cls, equipo: str):
@@ -108,13 +138,3 @@ class Equipo:
         ]
 
         return equipos
-
-        #return [
-        #    "Gallos UAA",
-        #    "Águilas Reales UPA",
-        #    "Águilas ITA",
-        #    "Lobos UTA",
-        #    "Linces UTR",
-        #    "Pumas UNAM",
-        #    "Tigres UNAM"
-        #]

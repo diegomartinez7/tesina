@@ -119,7 +119,8 @@ class SeleccionarEquipoVista(UserControl):
             bgcolor="#001f60",
             style=ButtonStyle(
                 shape=RoundedRectangleBorder(radius=12.5)
-            )
+            ),
+            on_click=self.seleccionarEquipo
         )
 
         containerTituloEquipos = Container(
@@ -480,3 +481,8 @@ class SeleccionarEquipoVista(UserControl):
         from Controllers.SeleccionarEquipoControl import SeleccionarEquipoControlador
         controlador = SeleccionarEquipoControlador(self.pagina)
         controlador.regresar()
+
+    def seleccionarEquipo(self, e):
+        from Controllers.SeleccionarEquipoControl import SeleccionarEquipoControlador
+        controlador = SeleccionarEquipoControlador(self.pagina)
+        controlador.seleccionarEquipo(self.equipoSeleccionado)

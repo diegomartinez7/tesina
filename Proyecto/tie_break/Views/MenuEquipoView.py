@@ -11,7 +11,7 @@ class MenuEquipoVista(UserControl):
         super().__init__()
         self.pagina = page
         self.opcionSeleccionada = None
-        self.equipoSeleccionado = None
+        self.equipoSeleccionado = self.pagina.session.get("equipo").getNombre()
         self.tituloEquipo = None
         self.tiuloOpcionSeleccionada = None
         self.containerContenidoSeleccionado = None
@@ -49,7 +49,8 @@ class MenuEquipoVista(UserControl):
         buttonRegresar = IconButton(
             icon=icons.KEYBOARD_RETURN_ROUNDED,
             icon_color="#b3b3cc",
-            icon_size=16
+            icon_size=16,
+            on_click=self.regresar
         )
         buttonConfiguracion = IconButton(
             icon=icons.SETTINGS,
@@ -227,7 +228,8 @@ class MenuEquipoVista(UserControl):
         self.update()
 
     def opcionCompetenciasYPartidosSeleccionada(self):
-        self.containerContenidoSeleccionado.content = Text(value="Vista de Competencias y Partidos")
+        tablaCompetencias = CompetenciasYPartidosVista(self.pagina)
+        self.containerContenidoSeleccionado.content = tablaCompetencias
         self.update()
 
     def opcionJugadoresSeleccionada(self):
@@ -242,3 +244,8 @@ class MenuEquipoVista(UserControl):
     def opcionEquiposRivalesSeleccionada(self):
         self.containerContenidoSeleccionado.content = Text(value="Vista de Equipos Rivales")
         self.update()
+
+    def regresar(self, e):
+        from Controllers.MenuEquipoControl import MenuEquipoControlador
+        controlador = MenuEquipoControlador(self.pagina)
+        controlador.regresar()

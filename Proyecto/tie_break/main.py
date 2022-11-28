@@ -9,6 +9,7 @@ from flet import *
 from Controllers.LoginControl import LoginControlador
 from Controllers.MenuEquipoControl import MenuEquipoControlador
 #from Views.MenuEquipoView import MenuEquipoVista
+from Models.Entidades.Equipo import Equipo
 
 
 # ----------------------------------------------------------------------------------------------------#
@@ -55,14 +56,17 @@ def configuracionInicial(page: Page):
 
 def main(page: Page):
     configuracionInicial(page)
-    llamarLogin(page)
+    #llamarLogin(page)
+
+    equipo = Equipo.getEquipos()[0]
+    page.session.set("equipo", equipo)
 
     #equipoView = MenuEquipoVista(page)
     #equipoView.setEquipoSeleccionado("Gallos UAA")
     #page.add(equipoView)
 
-    # menuEquipo = MenuEquipoControlador(page)
-    # menuEquipo.iniciarVista()
+    menuEquipo = MenuEquipoControlador(page)
+    menuEquipo.iniciarVista()
 
 
 def llamarLogin(page):

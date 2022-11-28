@@ -3,7 +3,6 @@ from flet import Page
 from Views.SeleccionarEquipoView import SeleccionarEquipoVista
 from Models.SeleccionarEquipoModel import SeleccionarEquipoModel
 
-
 class SeleccionarEquipoControlador(object):
     def __init__(self, page: Page):
         self.page = page
@@ -27,3 +26,11 @@ class SeleccionarEquipoControlador(object):
         from Controllers.MenuSeleccionOCreacionControl import MenuSeleccionOCreacionControlador
         menuSeleccion = MenuSeleccionOCreacionControlador(self.page)
         menuSeleccion.iniciarVista()
+
+    def seleccionarEquipo(self, equipoSeleccionado):
+        self.page.session.set("equipo", equipoSeleccionado)
+        self.page.controls.pop()
+        self.page.update()
+        from Controllers.MenuEquipoControl import MenuEquipoControlador
+        menuEquipo = MenuEquipoControlador(self.page)
+        menuEquipo.iniciarVista()
