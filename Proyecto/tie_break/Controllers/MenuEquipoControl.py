@@ -21,6 +21,15 @@ class MenuEquipoControlador(object):
     def obtenerJugadores(self):
         return self.modelo.getJugadores()
 
+    def obtenerCompetencias(self):
+        return self.modelo.getCompetencias()
+
+    def obtenerPruebas(self):
+        return self.modelo.getPruebas()
+
+    def obtenerRivales(self):
+        return self.modelo.getRivales()
+
     def validarInsertarJugadorVacio(self, jug: {}):
         if jug.get("nombre") == "" or jug.get("numero") == "" or jug.get("posicion") == "":
             return True

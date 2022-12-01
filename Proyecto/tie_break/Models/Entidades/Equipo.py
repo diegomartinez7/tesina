@@ -3,6 +3,9 @@ from Models.Entidades.Competencia import Competencia
 
 from operator import attrgetter
 
+from Models.Entidades.Pruebas.PruebaEquipo import PruebaEquipo
+
+
 class Equipo:
     def __init__(self, id, nombreEquipo, categoria, rama, tipoEquipo, nombreEntidad, contrario):
         # Información del Equipo
@@ -22,28 +25,87 @@ class Equipo:
             self.competencias: [Competencia] = []
             self.equiposRivales: [Equipo] = []
             self.ciclosEntrenamiento = []
+            self.pruebasFisicas: [PruebaEquipo] = []
+            self.setCompetencias()
+            self.setRivales()
+            self.setPruebasFisicas()
 
         self.setJugadores()
 
     def getNombre(self):
         return self.nombreEquipo
 
+    def getCategoria(self):
+        return self.categoria
+
+    def getRama(self):
+        return self.rama
+
+    def getTipoEquipo(self):
+        return self.tipoEquipo
+
+    def getEntidadRepresentada(self):
+        return self.nombreEntidad
+
     def getJugadores(self):
         return self.jugadores
 
     def setJugadores(self):
-        self.jugadores = [
-            Jugador(1, "Iván Alejandro Luna Hermosillo", "M", "Libero", 1, False),
-            Jugador(2, "Sergio Ruvalcaba Lozano", "M", "Acomodador", 4, True),
-            Jugador(3, "Brayan Alexis Aguilera de la Cruz", "M", "Opuesto", 5, False),
-            Jugador(4, "Eduardo Velazco Ramírez", "M", "Banda", 6, False),
-            Jugador(5, "José Raúl Ortega Rodríguez", "M", "Banda", 9, False),
-            Jugador(6, "Víctor Román López", "M", "Central", 11, False),
-            Jugador(7, "César Andrés Ramírez González", "M", "Central", 13, False),
-            Jugador(8, "César Hazael Moreno Rodríguez", "M", "Libero", 14, False),
-            Jugador(9, "Carlos Ruiz", "M", "Banda", 15, False),
-            Jugador(10, "Iojan Leo Escobedo Velázquez", "M", "Banda", 17, False),
-            Jugador(11, "Alan Manuel Márquez Álvarez", "M", "Central", 18, False)
+        if not self.contrario:
+            self.jugadores = [
+                Jugador(1, "Iván Alejandro Luna Hermosillo", "M", "Libero", 1, False),
+                Jugador(2, "Sergio Ruvalcaba Lozano", "M", "Acomodador", 4, True),
+                Jugador(3, "Brayan Alexis Aguilera de la Cruz", "M", "Opuesto", 5, False),
+                Jugador(4, "Eduardo Velazco Ramírez", "M", "Banda", 6, False),
+                Jugador(5, "José Raúl Ortega Rodríguez", "M", "Banda", 9, False),
+                Jugador(6, "Víctor Román López", "M", "Central", 11, False),
+                Jugador(7, "César Andrés Ramírez González", "M", "Central", 13, False),
+                Jugador(8, "César Hazael Moreno Rodríguez", "M", "Libero", 14, False),
+                Jugador(9, "Carlos Ruiz", "M", "Banda", 15, False),
+                Jugador(10, "Iojan Leo Escobedo Velázquez", "M", "Banda", 17, False),
+                Jugador(11, "Alan Manuel Márquez Álvarez", "M", "Central", 18, False)
+            ]
+        else:
+            self.jugadores = [
+                Jugador(1, "Iván Alejandro Luna Hermosillo", "M", "Libero", 1, False),
+                Jugador(2, "Sergio Ruvalcaba Lozano", "M", "Acomodador", 4, True),
+                Jugador(3, "Brayan Alexis Aguilera de la Cruz", "M", "Opuesto", 5, False),
+                Jugador(4, "Eduardo Velazco Ramírez", "M", "Banda", 6, False)
+            ]
+
+    def getCompetencias(self):
+        return self.competencias
+
+    def setCompetencias(self):
+        self.competencias = [
+            Competencia(1, "Torneo", "Torneo del pavo 2019", "10-Oct-2019", "20-Dic-2019", False),
+            Competencia(2, "Amistoso", "Partidos Amistosos 2022", "01-Ene-2022", "-", True),
+            Competencia(3, "Liga", "Liga Regional CONDE 2022", "13-Ago-2022", "12-Nov-2022", False)
+        ]
+
+    def getPruebasFisicas(self):
+        return self.pruebasFisicas
+
+    def setPruebasFisicas(self):
+        self.pruebasFisicas = [
+            PruebaEquipo(1, self.id, "Pruebas Finales Enero 2022", "23-Ene-2022", "Competitiva", True),
+            PruebaEquipo(2, self.id, "Pruebas Pre Vacaciones Diciembre 2022", "13-Dic-2022", "Precompetitiva", False),
+            PruebaEquipo(3, self.id, "Pruebas Post Vacaciones Enero 2022", "03-Ene-2022", "Competitiva", False),
+        ]
+
+    def getRivales(self):
+        return self.equiposRivales
+
+    def setRivales(self):
+        self.equiposRivales = [
+            Equipo(1, "Celtas", "Libre", "Varonil", "Club",
+                   "Club Celtas Voleibol", True),
+            Equipo(2, "Toros", "Libre", "Varonil", "Club",
+                   "Club Toros Voleibol", True),
+            Equipo(3, "TESM Querétaro", "Universitaria", "Varonil", "Institucional",
+                   "TESM Campus Querétaro", True),
+            Equipo(4, "Anahuac Querétaro", "Universitaria", "Varonil", "Institucional",
+                   "Universidad Anáhuac Querétaro", True)
         ]
 
     def insertarJugador(self, jugadorNuevo: Jugador):

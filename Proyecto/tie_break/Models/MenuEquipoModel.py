@@ -30,6 +30,15 @@ class MenuEquipoModel(object):
     def borrarJugador(self, jugador):
         self.equipo.borrarJugador(jugador.getId())
 
+    def getCompetencias(self):
+        return self.equipo.getCompetencias()
+
+    def getPruebas(self):
+        return self.equipo.getPruebasFisicas()
+
+    def getRivales(self):
+        return self.equipo.getRivales()
+
     @classmethod
     def getJugadoresEquipo(cls, equipo):
         return Equipo.getJugadores(equipo)

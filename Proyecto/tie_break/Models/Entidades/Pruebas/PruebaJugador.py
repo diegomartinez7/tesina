@@ -1,8 +1,8 @@
 class PruebaFisica:
-    def __init__(self, idJugador, fecha, peso, altura, indiceMasaCorporal, porcentajeMasaCorporal, porcentajeGrasa,
+    def __init__(self, idJugador, idPrueba, peso, altura, indiceMasaCorporal, porcentajeMasaCorporal, porcentajeGrasa,
                  saltoVertical, saltoHorizontal, velocidad, resistencia, flexibilidad, frecuenciaCardiaca):
         self.idJugador = idJugador
-        self.fecha = fecha
+        self.idPrueba = idPrueba
         self.peso = peso
         self.altura = altura
         self.indiceMasaCorporal = indiceMasaCorporal
@@ -14,3 +14,4 @@ class PruebaFisica:
         self.resitencia = resistencia
         self.flexibilidad = flexibilidad
         self.frecuenciaCardiaca = frecuenciaCardiaca
+

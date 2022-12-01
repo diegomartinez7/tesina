@@ -2,7 +2,9 @@ from flet import *
 from flet import UserControl, Page, icons, border, colors, padding, margin
 from flet.border import BorderSide
 
+from Views.VistasMenuEquipo.CicloDePreparacionView import CicloDePreparacionVista
 from Views.VistasMenuEquipo.CompetenciasYPartidosView import CompetenciasYPartidosVista
+from Views.VistasMenuEquipo.EquiposRivalesView import EquiposRivalesVista
 from Views.VistasMenuEquipo.JugadoresView import JugadoresVista
 
 
@@ -182,7 +184,7 @@ class MenuEquipoVista(UserControl):
 
         self.containerContenidoSeleccionado = Container(
             #content=Text(value="Por favor seleccione una opción"),
-            content=CompetenciasYPartidosVista(self.pagina),
+            content=CicloDePreparacionVista(self.pagina),
             expand=True,
             alignment=alignment.center
         )
@@ -238,11 +240,13 @@ class MenuEquipoVista(UserControl):
         self.update()
 
     def opcionCicloDePreparacionSeleccionada(self):
-        self.containerContenidoSeleccionado.content = Text(value="Vista de Ciclo de Preparación")
+        tablaPruebas = CicloDePreparacionVista(self.pagina)
+        self.containerContenidoSeleccionado.content = tablaPruebas
         self.update()
 
     def opcionEquiposRivalesSeleccionada(self):
-        self.containerContenidoSeleccionado.content = Text(value="Vista de Equipos Rivales")
+        tablaRivales = EquiposRivalesVista(self.pagina)
+        self.containerContenidoSeleccionado.content = tablaRivales
         self.update()
 
     def regresar(self, e):
