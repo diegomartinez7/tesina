@@ -65,8 +65,8 @@ def main(page: Page):
     #equipoView.setEquipoSeleccionado("Gallos UAA")
     #page.add(equipoView)
 
-    menuEquipo = MenuEquipoControlador(page)
-    menuEquipo.iniciarVista()
+    #menuEquipo = MenuEquipoControlador(page)
+    #menuEquipo.iniciarVista()
 
 
 def llamarLogin(page):
