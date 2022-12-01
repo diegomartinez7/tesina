@@ -56,7 +56,7 @@ def configuracionInicial(page: Page):
 
 def main(page: Page):
     configuracionInicial(page)
-    #llamarLogin(page)
+    llamarLogin(page)
 
     equipo = Equipo.getEquipos()[0]
     page.session.set("equipo", equipo)
