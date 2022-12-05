@@ -217,6 +217,9 @@ class MenuEquipoVista(UserControl):
 
     def registrarPartidoOnClick(self, e):
         self.setOpcionSeleccionada(e.control.content.value)
+        from Controllers.MenuEquipoControl import MenuEquipoControlador
+        controlador = MenuEquipoControlador(self.pagina)
+        controlador.registrarPartido()
 
     def registrarEntrenamientoOnClick(self, e):
         self.setOpcionSeleccionada(e.control.content.value)

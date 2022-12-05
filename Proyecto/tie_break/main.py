@@ -8,34 +8,9 @@ from flet import *
 
 from Controllers.LoginControl import LoginControlador
 from Controllers.MenuEquipoControl import MenuEquipoControlador
+from Controllers.RegistrarPartidoControl import RegistrarPartidoControlador
 #from Views.MenuEquipoView import MenuEquipoVista
 from Models.Entidades.Equipo import Equipo
-
-
-# ----------------------------------------------------------------------------------------------------#
-#                                            APLICACIÓN                                               #
-# ----------------------------------------------------------------------------------------------------#
-
-# def start():
-#     # ----------------------------------------------------------------------------------------------------#
-#     #                                        DEFINICIÓN DE ROOT                                           #
-#     # ----------------------------------------------------------------------------------------------------#
-#
-#     # Configuracion de la raíz
-#     # rootWidth = 800
-#     # rootHeight = 650
-#     root = Tk()
-#     # root.geometry(helpers.getGeometry(root,root.winfo_screenwidth(),root.winfo_screenheight()))
-#     root.state("zoom")
-#     root.title("Tie-Break")
-#     root.minsize(height=460, width=620)
-#     # root.iconbitmap(helpers.getImgPath('.ico'))
-#     # root['background'] = theme["color1"]
-#     root['background'] = '#1f1137'
-#
-#
-#     root.mainloop()
-
 
 def configuracionInicial(page: Page):
     page.fonts = {
@@ -48,10 +23,12 @@ def configuracionInicial(page: Page):
     page.title = "SSE Voley"
     page.bgcolor = "#D9D9D9"
     page.padding = 0
+    #page.window_maximized = True
+    #page.window_minimizable = False
     page.update()
 
     page.window_center()
-    page.on_close=page.close()
+    page.on_close = page.close()
 
 
 def main(page: Page):
@@ -60,13 +37,14 @@ def main(page: Page):
 
     equipo = Equipo.getEquipos()[0]
     page.session.set("equipo", equipo)
+    equipoContrario = Equipo.getEquipos()[1]
+    page.session.set("equipoContrario", equipoContrario)
 
-    #equipoView = MenuEquipoVista(page)
-    #equipoView.setEquipoSeleccionado("Gallos UAA")
-    #page.add(equipoView)
+    #menuEquipo = MenuEquipoControlador(page)
+    #menuEquipo.iniciarVista()
 
-    menuEquipo = MenuEquipoControlador(page)
-    menuEquipo.iniciarVista()
+    registrarPartido = RegistrarPartidoControlador(page)
+    registrarPartido.iniciarVista()
 
 
 def llamarLogin(page):

@@ -72,6 +72,15 @@ class MenuEquipoControlador(object):
     def borrarJugador(self, jugador):
         self.modelo.borrarJugador(jugador)
 
+    def registrarPartido(self):
+        equipoContrario = self.modelo.equipo.getEquipos()[0]
+        self.page.session.set("equipoContrario", equipoContrario)
+        self.page.controls.pop()
+        self.page.update()
+        from Controllers.RegistrarPartidoControl import RegistrarPartidoControlador
+        registrarPartido = RegistrarPartidoControlador(self.page)
+        registrarPartido.iniciarVista()
+
     def regresar(self):
         self.page.session.remove("equipo")
         self.page.controls.pop()
