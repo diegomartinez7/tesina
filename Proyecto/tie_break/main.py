@@ -8,8 +8,8 @@ from flet import *
 
 from Controllers.LoginControl import LoginControlador
 from Controllers.MenuEquipoControl import MenuEquipoControlador
+from Controllers.RegistrarEquipoControl import RegistrarEquipoControlador
 from Controllers.RegistrarPartidoControl import RegistrarPartidoControlador
-#from Views.MenuEquipoView import MenuEquipoVista
 from Models.Entidades.Equipo import Equipo
 
 def configuracionInicial(page: Page):
@@ -23,8 +23,6 @@ def configuracionInicial(page: Page):
     page.title = "SSE Voley"
     page.bgcolor = "#D9D9D9"
     page.padding = 0
-    #page.window_maximized = True
-    #page.window_minimizable = False
     page.update()
 
     page.window_center()
@@ -33,18 +31,21 @@ def configuracionInicial(page: Page):
 
 def main(page: Page):
     configuracionInicial(page)
-    #llamarLogin(page)
+    llamarLogin(page)
 
-    equipo = Equipo.getEquipos()[0]
-    page.session.set("equipo", equipo)
-    equipoContrario = Equipo.getEquipos()[1]
-    page.session.set("equipoContrario", equipoContrario)
+    #equipo = Equipo.getEquipos()[0]
+    #page.session.set("equipo", equipo)
+    #equipoContrario = Equipo.getEquipos()[1]
+    #page.session.set("equipoContrario", equipoContrario)
 
     #menuEquipo = MenuEquipoControlador(page)
     #menuEquipo.iniciarVista()
 
-    registrarPartido = RegistrarPartidoControlador(page)
-    registrarPartido.iniciarVista()
+    #registrarPartido = RegistrarPartidoControlador(page)
+    #registrarPartido.iniciarVista()
+
+    #crearEquipo = RegistrarEquipoControlador(page)
+    #crearEquipo.iniciarVista()
 
 
 def llamarLogin(page):

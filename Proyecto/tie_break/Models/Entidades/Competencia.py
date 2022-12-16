@@ -1,7 +1,7 @@
 class Competencia:
-    def __init__(self, id, tipo, nombre, inicio, fin, activa):
-        self.id: int = id
-        self.tipo: str = tipo
+    def __init__(self, idTipo, nombre, inicio, fin, activa):
+        self.id: int = 0
+        self.idTipo: int = idTipo
         self.nombre: str = nombre
         self.inicio: str = inicio
         self.fin: str = fin
@@ -9,17 +9,32 @@ class Competencia:
 
         self.partidos = []
 
+    def setNombre(self, nombre):
+        self.nombre = nombre
+
     def getNombre(self):
         return self.nombre
+
+    def setInicio(self, inicio):
+        self.inicio = inicio
 
     def getInicio(self):
         return self.inicio
 
+    def setFin(self, fin):
+        self.fin = fin
+
     def getFin(self):
         return self.fin
+
+    def setActiva(self, activa):
+        self.activa = activa
 
     def isActiva(self):
         return self.activa
 
+    def setTipo(self, tipo):
+        self.idTipo = tipo
+
     def getTipo(self):
-        return self.tipo
+        return self.idTipo

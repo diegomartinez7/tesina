@@ -30,6 +30,9 @@ class MenuEquipoControlador(object):
     def obtenerRivales(self):
         return self.modelo.getRivales()
 
+    def obtenerJugadoresContrarios(self, equipo):
+        return self.modelo.getJugadoresContrarios(equipo)
+
     def validarInsertarJugadorVacio(self, jug: {}):
         if jug.get("nombre") == "" or jug.get("numero") == "" or jug.get("posicion") == "":
             return True
@@ -72,8 +75,99 @@ class MenuEquipoControlador(object):
     def borrarJugador(self, jugador):
         self.modelo.borrarJugador(jugador)
 
-    def registrarPartido(self):
-        equipoContrario = self.modelo.equipo.getEquipos()[0]
+    def validarInsertarRivalVacio(self, rival: {}):
+        if(rival.get("nombre_equipo") == "" or rival.get("categoria") == "" or rival.get("nombre_entidad") == ""
+                or rival.get("rama") == "" or rival.get("tipo_equipo") == ""):
+            return True
+        else:
+            return False
+
+    def validarEditarRivalVacio(self, rival: {}):
+        if (rival.get("nombre_equipo") == "" and rival.get("categoria") == "" and rival.get("nombre_entidad") == ""
+                and rival.get("rama") == "" and rival.get("tipo_equipo") == ""):
+            return True
+        else:
+            return False
+
+    def vaildarRivalesIguales(self, rivalEditado: {}, rivalNoEditado):
+        if(rivalEditado.get("nombre_equipo") == rivalNoEditado.getNombre()
+                and rivalEditado.get("categoria") == rivalNoEditado.getCategoria()
+                and rivalEditado.get("nombre_entidad") == rivalNoEditado.getEntidadRepresentada()
+                and rivalEditado.get("rama") == rivalNoEditado.getRama()
+                and rivalEditado.get("tipo_equipo") == rivalNoEditado.getTipoEquipo()):
+            return True
+        else:
+            return False
+
+    def construirRivalEditado(self, rivalEditado: {}, rivalNoEditado: Jugador):
+        if not rivalEditado.get("nombre_equipo") == "":
+            rivalNoEditado.setNombre(rivalEditado.get("nombre_equipo"))
+        if not rivalEditado.get("categoria") == "":
+            rivalNoEditado.setCategoria(rivalEditado.get("categoria"))
+        if not rivalEditado.get("nombre_entidad") == "":
+            rivalNoEditado.setEntidadRepresentada(rivalEditado.get("nombre_entidad"))
+        if not rivalEditado.get("rama") == "":
+            rivalNoEditado.setRama(rivalEditado.get("rama"))
+        if not rivalEditado.get("tipo_equipo") == "":
+            rivalNoEditado.setTipoEquipo(rivalEditado.get("tipo_equipo"))
+
+        return rivalNoEditado
+
+    def insertarRival(self, rival: {}):
+        return self.modelo.insertarRival(rival)
+
+    def editarRival(self, rival):
+        self.modelo.editarRival(rival)
+
+    def borrarRival(self, rival):
+        self.modelo.borrarRival(rival)
+
+    def validarInsertarCompetenciaVacia(self, competencia: {}):
+        if(competencia.get("nombre") == "" or competencia.get("fecha_inicio") == ""
+                or competencia.get("fecha_fin") == "" or competencia.get("id_tipo") == ""):
+            return True
+        else:
+            return False
+
+    def validarEditarCompetenciaVacia(self, competencia: {}):
+        if (competencia.get("nombre") == "" and competencia.get("fecha_inicio") == ""
+                and competencia.get("fecha_fin") == "" and competencia.get("id_tipo") == ""):
+            return True
+        else:
+            return False
+
+    def vaildarCompetenciasIguales(self, comptenenciaEditada: {}, competenciaNoEditada):
+        if(comptenenciaEditada.get("nombre") == competenciaNoEditada.getNombre()
+                and comptenenciaEditada.get("fecha_inicio") == competenciaNoEditada.getInicio()
+                and comptenenciaEditada.get("fecha_fin") == competenciaNoEditada.getFin()
+                and comptenenciaEditada.get("id_tipo") == competenciaNoEditada.getTipo()):
+            return True
+        else:
+            return False
+
+    def construirCompetenciaEditada(self, comptetenciaEditada: {}, competeciaNoEditada: Jugador):
+        if not comptetenciaEditada.get("nombre") == "":
+            competeciaNoEditada.setNombre(comptetenciaEditada.get("nombre"))
+        if not comptetenciaEditada.get("fecha_inicio") == "":
+            competeciaNoEditada.setInicio(comptetenciaEditada.get("fecha_inicio"))
+        if not comptetenciaEditada.get("fecha_fin") == "":
+            competeciaNoEditada.setFin(comptetenciaEditada.get("fecha_fin"))
+        if not comptetenciaEditada.get("id_tipo") == "":
+            competeciaNoEditada.setTipo(comptetenciaEditada.get("id_tipo"))
+
+        return competeciaNoEditada
+
+    def insertarCompetencia(self, competencia: {}):
+        return self.modelo.insertarCompetencia(competencia)
+
+    def editarCompetencia(self, competencia):
+        self.modelo.editarCompetencia(competencia)
+
+    def borrarCompetencia(self, competencia):
+        self.modelo.borrarCompetencia(competencia)
+
+    def registrarPartido(self, equipo):
+        equipoContrario = equipo
         self.page.session.set("equipoContrario", equipoContrario)
         self.page.controls.pop()
         self.page.update()

@@ -2,15 +2,16 @@ from flet import *
 from flet import padding, icons
 from flet.buttons import RoundedRectangleBorder
 
-nombreEntrenador = "Alejandro González"
 
 class MenuSeleccionOCreacionVista(UserControl):
     def __init__(self, page: Page):
         super().__init__()
         self.pagina = page
+        self.nombreEntrenador = ""
 
     def build(self):
         self.expand = True
+        self.nombreEntrenador = self.obtenerNombreEntrenador()
         return self.inicializarComponentes()
 
     def inicializarComponentes(self):
@@ -21,7 +22,7 @@ class MenuSeleccionOCreacionVista(UserControl):
             font_family="Nunito"
         )
         mensajeBienvenidaEntrenador = Text(
-            value=f"Bienvenido {nombreEntrenador}",
+            value=f"Bienvenido {self.nombreEntrenador}",
             color="#001f60",
             size=32,
             font_family="Nunito"
@@ -52,7 +53,8 @@ class MenuSeleccionOCreacionVista(UserControl):
             style=ButtonStyle(
                 shape=RoundedRectangleBorder(radius=12.5),
                 padding=padding.symmetric(10, 0)
-            )
+            ),
+            on_click=self.clickCrearEquipo
         )
         buttonCerrarSesion = IconButton(
             icon=icons.LOGOUT,
@@ -105,10 +107,21 @@ class MenuSeleccionOCreacionVista(UserControl):
 
         return containerMenuSeleccionOCreacionVista
 
+    def obtenerNombreEntrenador(self):
+        from Controllers.MenuSeleccionOCreacionControl import MenuSeleccionOCreacionControlador
+        controlador = MenuSeleccionOCreacionControlador(self.pagina)
+        return controlador.obtenerNombreEntrenador()
+
     def clickSeleccionarEquipo(self, e):
         from Controllers.MenuSeleccionOCreacionControl import MenuSeleccionOCreacionControlador
         controlador = MenuSeleccionOCreacionControlador(self.pagina)
         controlador.seleccionarEquipo()
+
+    def clickCrearEquipo(self, e):
+        from Controllers.MenuSeleccionOCreacionControl import MenuSeleccionOCreacionControlador
+        controlador = MenuSeleccionOCreacionControlador(self.pagina)
+        controlador.crearEquipo()
+
     def cerrarSesion(self, e):
         from Controllers.MenuSeleccionOCreacionControl import MenuSeleccionOCreacionControlador
         controlador = MenuSeleccionOCreacionControlador(self.pagina)

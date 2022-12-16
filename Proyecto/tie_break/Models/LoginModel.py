@@ -1,12 +1,34 @@
+import requests
+
+from Models.Entidades.Usuario import Usuario
+
+
 class LoginModel(object):
-    # def __init__(self):
-    #     self.usuario = "alejandro.gonzalez"
-    #     self.password = "hola1234"
+    def __init__(self):
+        self.url = "http://localhost:8080/usuario/login"
 
-    @classmethod
-    def revisarCredenciales(cls, usr: str, pswd: str):
-        if usr == "alejandro.gonzalez":
-            if pswd == "hola1234":
-                return True
+    def revisarCredenciales(self, usr: str, pswd: str):
+        jsonCredenciales = {
+            "username": usr,
+            "password": pswd
+        }
 
-        return False
+        respuesta = requests.post(self.url, jsonCredenciales)
+        print(respuesta.text)
+        if respuesta.text == "":
+            print("respuesta vacía, credenciales inexistentes")
+            return None
+        else:
+            print("credenciales válidas")
+            return self.crearUsuarioRespuesta(respuesta.json())
+
+    def crearUsuarioRespuesta(self, respuesta):
+        id = respuesta.get("id")
+        nombre = respuesta.get("nombre")
+        apellido = respuesta.get("apellidos")
+        username = respuesta.get("username")
+        password = respuesta.get("password")
+        rol = respuesta.get("rol")
+        usuario = Usuario(nombre, apellido, username, rol, password)
+        usuario.setId(id)
+        return usuario
