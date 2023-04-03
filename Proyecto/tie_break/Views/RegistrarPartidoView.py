@@ -2,13 +2,32 @@ from flet import *
 from flet import colors, margin, border, padding, icons
 from flet.border import BorderSide
 from flet.buttons import RoundedRectangleBorder
-from flet.control import MainAxisAlignment
+
+from Models.Entidades.AccionesPartido.Acomodo import Acomodo
+from Models.Entidades.AccionesPartido.Pase import Pase
+from Models.Entidades.AccionesPartido.Remate import Remate
+from Models.Entidades.AccionesPartido.Saque import Saque
+from Models.Entidades.Sets.Set import Set
+from Models.Entidades.Sets.SetDesempate import SetDesempate
+from Models.Entidades.Punto import Punto
+from Models.Entidades.AccionesPartido.AccionPartido import AccionPartido
 
 
 class RegistrarPartidoVista(UserControl):
     def __init__(self, page: Page):
         super().__init__()
         self.pagina = page
+
+        self.setsObjetivo = self.pagina.session.get("sets")
+        self.puntosSet = self.pagina.session.get("puntos")
+        self.setActual = None
+        self.puntoActual = None
+        self.accionActual = None
+        self.jugador = None
+        self.tipoAccion = None
+        self.contrario = None
+        self.partidoIniciado = False
+
         self.numeroSet = 1
         self.textNumeroSet = None
         self.textEquipoPropio = None
@@ -50,6 +69,13 @@ class RegistrarPartidoVista(UserControl):
         self.containerImagenCancha = None
 
     def build(self):
+        idPartido = self.pagina.session.get("partidoRegistrado").getId()
+        nuevoSet = Set(self.numeroSet, idPartido, self.puntosSet)
+        nuevoSet.setId(1)
+        self.setActual = nuevoSet
+        self.puntoActual = Punto(self.setActual.getId(), 0, 0)
+        self.puntoActual.setId(1)
+        self.iniciarSet()
         self.expand = True
         self.textNumeroSet = Text(
             value=f"Set {self.numeroSet}",
@@ -323,7 +349,9 @@ class RegistrarPartidoVista(UserControl):
                 shape=RoundedRectangleBorder(radius=12.5),
                 padding=padding.symmetric(5, 5)
             ),
-            tooltip="Punto para equipo A"
+            tooltip="Punto para equipo A",
+            on_click=self.terminarPunto,
+            data="A"
         )
         buttonPuntoEquipoDerecha = ElevatedButton(
             content=Text(value="Pt", color=colors.WHITE),
@@ -332,7 +360,9 @@ class RegistrarPartidoVista(UserControl):
                 shape=RoundedRectangleBorder(radius=12.5),
                 padding=padding.symmetric(5, 5)
             ),
-            tooltip="Punto para equipo B"
+            tooltip="Punto para equipo B",
+            on_click=self.terminarPunto,
+            data="B"
         )
 
         columnBotonesMarcadorIzquierdo = Column(
@@ -886,6 +916,9 @@ class RegistrarPartidoVista(UserControl):
     def regresar(self, e):
         from Controllers.RegistrarPartidoControl import RegistrarPartidoControlador
         controlador = RegistrarPartidoControlador(self.pagina)
+        self.pagina.session.remove("puntos")
+        self.pagina.session.remove("sets")
+        self.pagina.session.remove("partidoRegistrado")
         controlador.regresar()
 
     def setLogs(self):
@@ -1016,6 +1049,8 @@ class RegistrarPartidoVista(UserControl):
 
     def jugadorClickeado(self, e):
         self.quitarBordesContenedores()
+        self.jugador = e.control.data.get('jugador')
+        self.contrario = True if e.control.data.get("contrario") else False
         if self.accionesIniciadas:
             self.accionEnProceso += "B" if e.control.data.get("contrario") else "A"
             self.accionEnProceso += f"{e.control.data.get('jugador').getNumero()}:"
@@ -1032,6 +1067,7 @@ class RegistrarPartidoVista(UserControl):
         self.quitarBordesContenedores()
         if self.accionesIniciadas and not self.zonasPorSeleccionar:
             self.accionEnProceso += f"{e.control.data}"
+            self.tipoAccion = e.control.data
             self.inputComandos.hint_text = self.accionEnProceso
             self.contenidoCancha = self.iniciarContenedoresZonas()
             self.stackCancha.controls = [
@@ -1057,6 +1093,24 @@ class RegistrarPartidoVista(UserControl):
             self.terminarAccion()
 
     def terminarAccion(self):
+        if self.tipoAccion == "S":
+            accionAgregar = Saque(self.puntoActual.getId(), self.jugador.getId(), "++",
+                                  self.zonaInicial, self.zonaFinal, self.contrario)
+        elif self.tipoAccion == "P":
+            accionAgregar = Pase(self.puntoActual.getId(), self.jugador.getId(), "++",
+                                  self.zonaInicial, self.zonaFinal, self.contrario)
+        elif self.tipoAccion == "A":
+            accionAgregar = Acomodo(self.puntoActual.getId(), self.jugador.getId(), "++",
+                                 self.zonaInicial, self.zonaFinal, self.contrario)
+        elif self.tipoAccion == "R":
+            accionAgregar = Remate(self.puntoActual.getId(), self.jugador.getId(), "++",
+                                 self.zonaInicial, self.zonaFinal, self.contrario)
+        else:
+            accionAgregar = Pase(self.puntoActual.getId(), self.jugador.getId(), "++",
+                                 self.zonaInicial, self.zonaFinal, self.contrario)
+
+        self.puntoActual.agregarAccion(accionAgregar)
+
         self.accionesIniciadas = False
         self.zonasPorSeleccionar = False
         self.accionEnProceso += "."
@@ -1111,7 +1165,69 @@ class RegistrarPartidoVista(UserControl):
         lado = "A"
         traduccion = controlador.registrarAccion(self.accionEnProceso, lado)
         self.listaLogs.append(
-            Text(traduccion)
+            Text(f"\t{traduccion}")
         )
         self.listViewLogs.controls = self.listaLogs
         self.update()
+
+    def iniciarPartido(self):
+        idPartido = self.pagina.session.get("partidoRegistrado").getId()
+        nuevoSet = Set(self.numeroSet, idPartido, self.puntosSet)
+        nuevoSet.setId(1)
+        self.setActual = nuevoSet
+        self.puntoActual = Punto(self.setActual.getId(), 0, 0)
+        self.iniciarSet()
+
+    def iniciarSet(self):
+        self.marcadorPropio = 0
+        self.marcadorContrario = 0
+        self.listaLogs.append(Text(f"Punto {len(self.listaLogs) + 1}"))
+
+    def iniciarPunto(self):
+        idAnterior = self.puntoActual.getId()
+        self.puntoActual = Punto(self.setActual.getId(), self.marcadorPropio, self.marcadorContrario)
+        self.puntoActual.setId(idAnterior + 1)
+
+    def terminarSet(self):
+        from Controllers.RegistrarPartidoControl import RegistrarPartidoControlador
+        controlador = RegistrarPartidoControlador(self.pagina)
+        controlador.agregarSet(self.setActual)
+        self.listaLogs = []
+        self.listViewLogs.controls = self.listaLogs
+        self.update()
+        self.numeroSet = self.numeroSet + 1
+        if self.numeroSet == self.setsObjetivo:
+            self.puntosSet = 15
+        idPartido = self.pagina.session.get("partidoRegistrado").getId()
+        idSetActual = self.setActual.getId()
+        nuevoSet = Set(self.numeroSet, idPartido, self.puntosSet)
+        nuevoSet.setId(idSetActual)
+        self.setActual = nuevoSet
+        self.textNumeroSet.value = f"Set {self.numeroSet}"
+        self.update()
+        self.iniciarSet()
+
+    def terminarPunto(self, e):
+        if e.control.data == "A":
+            self.aumentarMarcadorIzquierdo(e)
+            self.puntoActual.setResultado(True)
+        elif e.control.data == "B":
+            self.aumentarMarcadorDerecho(e)
+            self.puntoActual.setResultado(False)
+        self.setActual.agregarPunto(self.puntoActual)
+        if self.marcadorPropio == 25 or ((self.marcadorPropio - self.marcadorContrario >= 2)
+                                         and self.marcadorPropio >= 24):
+            self.terminarSet()
+        elif self.marcadorContrario == 25 or ((self.marcadorContrario - self.marcadorPropio >= 2)
+                                         and self.marcadorContrario >= 24):
+            self.terminarSet()
+        else:
+            self.listaLogs.append(Text(f"Punto {self.puntoActual.getId()}"))
+            self.listViewLogs.controls = self.listaLogs
+            self.update()
+        self.inputComandos.hint_text = ""
+        self.accionesEnPunto = ""
+        self.accionEnProceso = ""
+        self.zonaInicial = ""
+        self.zonaFinal = ""
+        self.iniciarPunto()

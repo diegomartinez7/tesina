@@ -33,19 +33,17 @@ def main(page: Page):
     configuracionInicial(page)
     llamarLogin(page)
 
-    #equipo = Equipo.getEquipos()[0]
-    #page.session.set("equipo", equipo)
-    #equipoContrario = Equipo.getEquipos()[1]
-    #page.session.set("equipoContrario", equipoContrario)
-
-    #menuEquipo = MenuEquipoControlador(page)
-    #menuEquipo.iniciarVista()
+    # equipo = Equipo.getEquipos()[0]
+    # page.session.set("equipo", equipo)
+    # equipoContrario = Equipo.getEquipos()[1]
+    # page.session.set("equipoContrario", equipoContrario)
+    #
+    # menuEquipo = MenuEquipoControlador(page)
+    # menuEquipo.iniciarVista()
 
     #registrarPartido = RegistrarPartidoControlador(page)
     #registrarPartido.iniciarVista()
 
-    #crearEquipo = RegistrarEquipoControlador(page)
-    #crearEquipo.iniciarVista()
 
 
 def llamarLogin(page):

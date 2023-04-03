@@ -6,7 +6,8 @@ from Models.Entidades.Usuario import Usuario
 class RegistroModel(object):
     def __init__(self):
         self.nuevoUsuario: Usuario = None
-        self.urlBack = "http://localhost:8080/usuario"
+        # self.urlBack = "http://localhost:8080/usuario"
+        self.urlBack = "http://localhost:3000/api/usuarios"
 
     def registrarUsuario(self, usr: {}):
         nombre = usr.get("nombre")

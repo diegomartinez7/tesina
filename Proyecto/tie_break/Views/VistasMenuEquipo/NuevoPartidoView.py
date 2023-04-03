@@ -21,8 +21,18 @@ class NuevoPartidoView(UserControl):
         self.columnListaJugadoresPropios = None
         self.columnListaJugadoresContrarios = None
 
+        self.dropdownCompetencias = None
+        self.inputUbicacion = None
+        self.inputFecha = None
+        self.inputPuntos = None
+        self.dropdownSets = None
+
+        self.rivalSeleccionado = False
+        self.dialogEquipo: AlertDialog = None
+
     def build(self):
         self.expand = True
+        self.configurarDialog()
         self.listaEquiposRivales = self.obtenerListaEquipos()
         self.listaCompetencias = self.obtenerListaCompetencias()
         self.textEquipoPropio = Text(
@@ -81,7 +91,7 @@ class NuevoPartidoView(UserControl):
             font_family="Nunito"
         )
 
-        dropdownCompetencias = Dropdown(
+        self.dropdownCompetencias = Dropdown(
             width=400,
             options=self.obtenerContenedoresCompetencias(),
             color="#001f60",
@@ -91,7 +101,7 @@ class NuevoPartidoView(UserControl):
             focused_border_color="#001f60",
             content_padding=10
         )
-        inputUbicacion = TextField(
+        self.inputUbicacion = TextField(
             color="#001f60",
             text_size=14,
             border_radius=12.5,
@@ -100,7 +110,7 @@ class NuevoPartidoView(UserControl):
             focused_border_color="#001f60",
             content_padding=10
         )
-        inputFecha = TextField(
+        self.inputFecha = TextField(
             color="#001f60",
             text_size=14,
             border_radius=12.5,
@@ -109,7 +119,7 @@ class NuevoPartidoView(UserControl):
             focused_border_color="#001f60",
             content_padding=10
         )
-        inputPuntos = TextField(
+        self.inputPuntos = TextField(
             color="#001f60",
             text_size=14,
             border_radius=12.5,
@@ -118,7 +128,7 @@ class NuevoPartidoView(UserControl):
             focused_border_color="#001f60",
             content_padding=10
         )
-        dropdownSets = Dropdown(
+        self.dropdownSets = Dropdown(
             width=75,
             options=[
                 dropdown.Option("2/3"),
@@ -137,7 +147,7 @@ class NuevoPartidoView(UserControl):
                 controls=[
                     labelInputCompetecnia,
                     Container(
-                        content=dropdownCompetencias,
+                        content=self.dropdownCompetencias,
                         bgcolor=colors.WHITE,
                         border_radius=12.5
                     )
@@ -151,7 +161,7 @@ class NuevoPartidoView(UserControl):
                 controls=[
                     labelInputUbicacion,
                     Container(
-                        content=inputUbicacion,
+                        content=self.inputUbicacion,
                         bgcolor=colors.WHITE,
                         border_radius=12.5
                     )
@@ -165,7 +175,7 @@ class NuevoPartidoView(UserControl):
                 controls=[
                     labelInputFecha,
                     Container(
-                        content=inputFecha,
+                        content=self.inputFecha,
                         bgcolor=colors.WHITE,
                         border_radius=12.5
                     )
@@ -179,7 +189,7 @@ class NuevoPartidoView(UserControl):
                 controls=[
                     labelInputPuntos,
                     Container(
-                        content=inputPuntos,
+                        content=self.inputPuntos,
                         bgcolor=colors.WHITE,
                         border_radius=12.5
                     )
@@ -193,7 +203,7 @@ class NuevoPartidoView(UserControl):
                 controls=[
                     labelInputSets,
                     Container(
-                        content=dropdownSets,
+                        content=self.dropdownSets,
                         bgcolor=colors.WHITE,
                         border_radius=12.5
                     )
@@ -263,7 +273,7 @@ class NuevoPartidoView(UserControl):
             style=ButtonStyle(
                 shape=RoundedRectangleBorder(radius=12.5)
             ),
-            on_click=self.iniciarPartido
+            on_click=self.registrarPartido
         )
 
         containerNombreEquipoPropio = Container(
@@ -444,12 +454,94 @@ class NuevoPartidoView(UserControl):
         else:
             self.listaJugadoresPropios = filasJugadores
 
+    def configurarDialog(self):
+        self.dialogEquipo = AlertDialog(
+            modal=True,
+            title=Text("Error", text_align="center", color="#001f60"),
+            content=Text("Aquí va el contenido del dialog"),
+            actions=[
+                TextButton(content=Text("Aceptar", color="#00BC06")),
+                TextButton(content=Text("Cancelar", color="#d50037"))
+            ],
+            actions_alignment="center"
+        )
+        self.pagina.dialog = self.dialogEquipo
+
+    def iniciarDialogError(self, msg):
+        self.dialogEquipo.title = Text("¡Error!", text_align="center", color="#d50037")
+        self.dialogEquipo.content = Text(msg, text_align="center", size=20)
+        self.dialogEquipo.actions = [
+            TextButton(content=Text("Aceptar", color="#001f60"), on_click=self.cerrarDialog)
+        ]
+
+    def abrirErrorDialog(self, msg):
+        self.iniciarDialogError(msg)
+        self.dialogEquipo.open = True
+        self.pagina.update()
+
+    def cerrarDialog(self, e):
+        self.dialogEquipo.open = False
+        self.pagina.update()
+
     def equipoElegido(self, e):
+        self.rivalSeleccionado = True
         self.equipoSeleccionado = e.control.data
         self.textEquipoRivalSeleccionado.value = self.equipoSeleccionado.getNombre()
         self.obtenerContenedoresJugadores(True)
         self.columnListaJugadoresContrarios.controls = self.listaJugadoresContrarios
         self.update()
+
+    def registrarPartido(self, e):
+        from Controllers.MenuEquipoControl import MenuEquipoControlador
+        controlador = MenuEquipoControlador(self.pagina)
+
+        if not self.validarInputsVacios() and self.rivalSeleccionado:
+            nombreCompetencia = self.dropdownCompetencias.value
+            competencia = controlador.obtenerCompetenciaPorNombre(nombreCompetencia)
+            id = competencia.obtenerUltimoIdPartdo()
+            idCompetencia = competencia.getId()
+            idEquipo = self.pagina.session.get("equipo").getId()
+            idContrario = self.equipoSeleccionado.getId()
+            ubicacion = self.inputUbicacion.value
+            fecha = self.inputFecha.value
+
+            puntos = int(self.inputPuntos.value)
+
+            if self.dropdownSets.value == "2/3":
+                sets = 2
+            else:
+                sets = 3
+
+            self.pagina.session.set("puntos", puntos)
+            self.pagina.session.set("sets", sets)
+
+            nuevoPartido = {
+                "fecha": fecha,
+                "id": id,
+                "id_competencia": idCompetencia,
+                "id_contrario": idContrario,
+                "id_equipo": idEquipo,
+                "resultado": False,
+                "ubicacion": ubicacion
+            }
+            controlador.insertarPartido(nuevoPartido)
+            partidoInsertado = competencia.getPartidoId(id)
+            self.pagina.session.set("partidoRegistrado", partidoInsertado)
+            self.iniciarPartido()
+        else:
+            self.abrirErrorDialog("No puede haber campos vacíos y debe escogerse un rival")
+
+    def validarInputsVacios(self):
+        competencia = self.dropdownCompetencias.value
+        ubicacion = self.inputUbicacion.value
+        fecha = self.inputFecha.value
+        puntos = self.inputPuntos.value
+        sets = self.dropdownSets.value
+
+        if competencia == "" or ubicacion == "" or fecha == "" or puntos == "" or sets == "":
+            return True
+        else:
+            return False
 
     def obtenerListaEquipos(self):
         from Controllers.MenuEquipoControl import MenuEquipoControlador
@@ -471,7 +563,10 @@ class NuevoPartidoView(UserControl):
         controlador = MenuEquipoControlador(self.pagina)
         return controlador.obtenerJugadores()
 
-    def iniciarPartido(self, e):
+    def iniciarPartido(self):
         from Controllers.MenuEquipoControl import MenuEquipoControlador
         controlador = MenuEquipoControlador(self.pagina)
-        controlador.registrarPartido(self.equipoSeleccionado)
+        if self.rivalSeleccionado:
+            controlador.registrarPartido(self.equipoSeleccionado)
+        else:
+            self.abrirErrorDialog("No se ha seleccionado un rival")

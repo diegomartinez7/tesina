@@ -166,6 +166,12 @@ class MenuEquipoControlador(object):
     def borrarCompetencia(self, competencia):
         self.modelo.borrarCompetencia(competencia)
 
+    def obtenerCompetenciaPorNombre(self, nombre):
+        return self.modelo.obtenerCompetenciaPorNombre(nombre)
+
+    def insertarPartido(self, partido: {}):
+        self.modelo.insertarPartido(partido)
+
     def registrarPartido(self, equipo):
         equipoContrario = equipo
         self.page.session.set("equipoContrario", equipoContrario)

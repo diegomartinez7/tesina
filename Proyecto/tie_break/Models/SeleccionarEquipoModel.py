@@ -19,8 +19,10 @@ class SeleccionarEquipoModel(object):
 
     def getEquipos(self, idUsuario):
         #return Equipo.getEquipos()
-        url = f"http://localhost:8080/usuario/{idUsuario}/equipos"
+        # url = f"http://localhost:8080/usuario/{idUsuario}/equipos"
+        url = f"http://localhost:3000/api/usuarios/{idUsuario}/equipos"
         respuesta = requests.get(url)
+        print(type(respuesta.json()))
         print(respuesta.json())
         listaEquiposJsn = respuesta.json()
         listaEquipos = []
@@ -35,7 +37,8 @@ class SeleccionarEquipoModel(object):
                 equipo.get("contrario")
             )
             nuevoEquipo.setId(equipo.get("id"))
-            jugadoresJsn = equipo.get("jugadoresPropio")
+            # jugadoresJsn = equipo.get("jugadoresPropio")
+            jugadoresJsn = equipo.get("jugador_propios")
             jugadores = self.construirJugadores(jugadoresJsn, False)
             nuevoEquipo.setJugadores(jugadores)
             listaEquipos.append(nuevoEquipo)
@@ -44,7 +47,8 @@ class SeleccionarEquipoModel(object):
 
     def editarJugador(self, jugador):
         id = jugador.getId()
-        url = f"http://localhost:8080/jugadorPropio/{id}"
+        # url = f"http://localhost:8080/jugadorPropio/{id}"
+        url = f"http://localhost:3000/api/jugadores/{id}"
         jugadorEditar = {
             "capitan": jugador.isCapitan(),
             "genero": jugador.getGenero(),
@@ -64,7 +68,8 @@ class SeleccionarEquipoModel(object):
 
     def borrarJugador(self, jugador):
         id = jugador.getId()
-        url = f"http://localhost:8080/jugadorPropio/{id}"
+        # url = f"http://localhost:8080/jugadorPropio/{id}"
+        url = f"http://localhost:3000/api/jugadores/{id}"
         respuesta = requests.delete(url)
         print(respuesta)
         if respuesta.status_code == 200:

@@ -5,7 +5,8 @@ from Models.Entidades.Usuario import Usuario
 
 class LoginModel(object):
     def __init__(self):
-        self.url = "http://localhost:8080/usuario/login"
+        # self.url = "http://localhost:8080/usuario/login"  # Url para backend en Spring
+        self.url = "http://localhost:3000/api/usuarios/login"   # Url para backend en Nodejs
 
     def revisarCredenciales(self, usr: str, pswd: str):
         jsonCredenciales = {
@@ -23,12 +24,12 @@ class LoginModel(object):
             return self.crearUsuarioRespuesta(respuesta.json())
 
     def crearUsuarioRespuesta(self, respuesta):
-        id = respuesta.get("id")
-        nombre = respuesta.get("nombre")
-        apellido = respuesta.get("apellidos")
-        username = respuesta.get("username")
-        password = respuesta.get("password")
-        rol = respuesta.get("rol")
+        id = respuesta[0].get("id")
+        nombre = respuesta[0].get("nombre")
+        apellido = respuesta[0].get("apellidos")
+        username = respuesta[0].get("username")
+        password = respuesta[0].get("password")
+        rol = respuesta[0].get("rol")
         usuario = Usuario(nombre, apellido, username, rol, password)
         usuario.setId(id)
         return usuario

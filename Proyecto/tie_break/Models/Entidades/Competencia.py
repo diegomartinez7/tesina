@@ -1,3 +1,6 @@
+from Models.Entidades.Partido import Partido
+
+
 class Competencia:
     def __init__(self, idTipo, nombre, inicio, fin, activa):
         self.id: int = 0
@@ -7,7 +10,13 @@ class Competencia:
         self.fin: str = fin
         self.activa: bool = activa
 
-        self.partidos = []
+        self.partidos: [Partido] = []
+
+    def setId(self, id):
+        self.id = id
+
+    def getId(self):
+        return self.id
 
     def setNombre(self, nombre):
         self.nombre = nombre
@@ -38,3 +47,15 @@ class Competencia:
 
     def getTipo(self):
         return self.idTipo
+
+    def insertarPartido(self, partido: Partido):
+        self.partidos.append(partido)
+
+    def getPartidoId(self, id):
+        for partido in self.partidos:
+            if partido.getId() == id:
+                return partido
+
+    def obtenerUltimoIdPartdo(self):
+        id = len(self.partidos) + 1
+        return id

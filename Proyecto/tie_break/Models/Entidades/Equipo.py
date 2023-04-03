@@ -1,5 +1,6 @@
 from Models.Entidades.Jugadores.Jugador import Jugador
 from Models.Entidades.Competencia import Competencia
+from Models.Entidades.Partido import Partido
 
 from Models.Entidades.Pruebas.PruebaEquipo import PruebaEquipo
 
@@ -172,6 +173,10 @@ class Equipo:
         id = len(self.jugadores) + 1
         return id
 
+    def obtenerUltimoIdCompetencias(self):
+        id = len(self.competencias) + 1
+        return id
+
     def obtenerGeneroEquipo(self):
         if self.rama == "Varonil":
             return "M"
@@ -186,6 +191,16 @@ class Equipo:
             if jugador.getNumero() == jugadorNuevo.getNumero() or jugador.getNombre() == jugadorNuevo.getNombre():
                 return True
         return False
+
+    def obtenerCompetenciaPorNombre(self, nombre):
+        for competencia in self.competencias:
+            if competencia.getNombre() == nombre:
+                return competencia
+
+    def insertarPartido(self, partido: Partido):
+        for competencia in self.competencias:
+            if partido.getIdCompetencia() == competencia.getId():
+                competencia.insertarPartido(partido)
 
     def setJugadoresIniciales(self):
         if not self.contrario:
@@ -214,6 +229,9 @@ class Equipo:
                 Jugador("Alan Manuel Márquez Álvarez", "M", "Central", 18, False)
             ]
 
+        for i, jugador in enumerate(self.jugadores):
+            jugador.setId(i + 1)
+
     def setRivalesIniciales(self):
         self.equiposRivales = [
             Equipo("Celtas", "Libre", "Varonil", "Club",
@@ -226,12 +244,17 @@ class Equipo:
                    "Universidad Anáhuac Querétaro", True)
         ]
 
+        for i, rival in enumerate(self.equiposRivales):
+            rival.setId(i + 1)
+
     def setCompetenciasIniciales(self):
         self.competencias = [
             Competencia(1, "Torneo del pavo 2019", "10-Oct-2019", "20-Dic-2019", False),
             Competencia(3, "Partidos Amistosos 2022", "01-Ene-2022", "-", True),
             Competencia(2, "Liga Regional CONDE 2022", "13-Ago-2022", "12-Nov-2022", False)
         ]
+        for i, competencia in enumerate(self.competencias):
+            competencia.setId(i + 1)
 
     def setPruebasFisicasIniciales(self):
         self.pruebasFisicas = [
@@ -239,46 +262,6 @@ class Equipo:
             PruebaEquipo(2, self.id, "Pruebas Pre Vacaciones Diciembre 2022", "13-Dic-2022", "Precompetitiva", False),
             PruebaEquipo(3, self.id, "Pruebas Post Vacaciones Enero 2022", "03-Ene-2022", "Competitiva", False),
         ]
-
-    @classmethod
-    def getJugadoresEquipo(cls, equipo: str):
-        from Models.Entidades.Jugadores.Jugador import Jugador
-
-        jugadores = []
-
-        if equipo == "Gallos UAA":
-            jugadores = [
-                Jugador("Iván Alejandro Luna Hermosillo", "M", "Libero", 1, False),
-                Jugador("Sergio Ruvalcaba Lozano", "M", "Acomodador", 4, True),
-                Jugador("Brayan Alexis Aguilera de la Cruz", "M", "Opuesto", 5, False),
-                Jugador("Eduardo Velazco Ramírez", "M", "Banda", 6, False),
-                Jugador("José Raúl Ortega Rodríguez", "M", "Banda", 9, False),
-                Jugador("Víctor Román López", "M", "Central", 11, False),
-                Jugador("César Andrés Ramírez González", "M", "Central", 13, False),
-                Jugador("César Hazael Moreno Rodríguez", "M", "Libero", 14, False),
-                Jugador("Carlos Ruiz", "M", "Banda", 15, False),
-                Jugador("Iojan Leo Escobedo Velázquez", "M", "Banda", 17, False),
-                Juga("Alan Manuel Márquez Álvarez", "M", "Central", 18, False)
-            ]
-        elif equipo == "Águilas Reales UPA":
-            jugadores = [
-                Jugador("Benjamín Esqueda Medrano", "M", "Central", 10, True),
-                Jugador("Jesús Ruvalcaba Lozano", "M", "Banda", 2, False),
-                Jugador("Daichi Guerrero", "M", "Acomodador", 5, False),
-                Jugador("José Moreno Prieto", "M", "Banda", 6, False),
-                Jugador("Ernesto Armando Pérez Pandas", "M", "Banda", 9, False)
-            ]
-        else:
-            jugadores = [
-                Jugador("Dummy", "M", "Central", 1, False),
-                Jugador("Dummy", "M", "Banda", 2, False),
-                Jugador("Dummy", "M", "Acomodador", 3, False),
-                Jugador("Dummy", "M", "Banda", 4, True),
-                Jugador("Dummy", "M", "Banda", 5, False),
-                Jugador("Dummy", "M", "Banda", 6, False)
-            ]
-
-        return jugadores
 
     @classmethod
     def getEquipos(cls):

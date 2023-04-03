@@ -1,6 +1,7 @@
 from Models.Entidades.Equipo import Equipo
 from Models.Entidades.Jugadores.Jugador import Jugador
 from Models.Entidades.Competencia import Competencia
+from Models.Entidades.Partido import Partido
 
 
 class MenuEquipoModel(object):
@@ -22,6 +23,7 @@ class MenuEquipoModel(object):
         if self.equipo.checarJugadorRepetido(nuevoJugador):
             return False
         else:
+            print(jugador)
             self.equipo.insertarJugador(nuevoJugador)
             return True
 
@@ -82,6 +84,21 @@ class MenuEquipoModel(object):
         for equipo in self.equipo.getRivales():
             if equipo.getNombre() == equipoBuscado.getNombre():
                 return equipo.getJugadores()
+
+    def obtenerCompetenciaPorNombre(self, nombre):
+        return self.equipo.obtenerCompetenciaPorNombre(nombre)
+
+    def insertarPartido(self, partido: {}):
+        id = partido.get("id")
+        idCompetencia = partido.get("id_competencia")
+        idContrario = partido.get("id_contrario")
+        idPropio = partido.get("id_equipo")
+        resultado = partido.get("resultado")
+        ubiacion = partido.get("ubicacion")
+        fecha = partido.get("fecha")
+        nuevoPartido = Partido(idPropio, idContrario,idCompetencia, ubiacion, fecha)
+        nuevoPartido.setId(id)
+        self.equipo.insertarPartido(nuevoPartido)
 
     @classmethod
     def getJugadoresEquipo(cls, equipo):

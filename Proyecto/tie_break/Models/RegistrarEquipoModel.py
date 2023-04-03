@@ -6,8 +6,10 @@ import requests
 class RegistrarEquipoModel(object):
     def __init__(self):
         self.listaJugadoresTemporal = []
-        self.url = "http://localhost:8080/equipo"
-        self.urlJugador = "http://localhost:8080/jugadorPropio"
+        # self.url = "http://localhost:8080/equipo"
+        self.url = "http://localhost:3000/api/equipos"
+        # self.urlJugador = "http://localhost:8080/jugadorPropio"
+        self.urlJugador = "http://localhost:3000/api/jugadores"
 
     def crearJugador(self, jug: {}):
         nombre = jug.get("nombre")
@@ -26,8 +28,9 @@ class RegistrarEquipoModel(object):
         return self.crearJugadorRespuesta(respuesta.json())
 
     def insertarEquipo(self, equipo: {}):
+        print(equipo)
         respuesta = requests.post(self.url, equipo)
-        print(f"Equipo creado con resultado: {respuesta}")
+        # print(f"Equipo creado con resultado: {respuesta}")
         return self.crearEquipoRespuesta(respuesta.json())
 
     def crearEquipoRespuesta(self, respuesta: {}):
@@ -61,13 +64,15 @@ class RegistrarEquipoModel(object):
         return nuevoJugador
 
     def asociarUsuario(self, idUsuario, idEquipo):
-        url = f"http://localhost:8080/usuario/{idUsuario}/equipo/{idEquipo}"
+        # url = f"http://localhost:8080/usuario/{idUsuario}/equipo/{idEquipo}"
+        url = f"http://localhost:3000/api/usuarios/{idUsuario}/equipo/{idEquipo}"
         respuesta = requests.put(url)
         print(f"Usuario asociado con resultado: {respuesta}")
         return respuesta
 
     def asociarJugador(self, idJugador, idEquipo):
-        url = f"http://localhost:8080/equipo/{idEquipo}/jugadorPropio/{idJugador}"
+        # url = f"http://localhost:8080/equipo/{idEquipo}/jugadorPropio/{idJugador}"
+        url = f"http://localhost:3000/api/equipos/{idEquipo}/jugadorPropio/{idJugador}"
         respuesta = requests.put(url)
         print(f"Jugador asociado con resultado: {respuesta}")
         return respuesta

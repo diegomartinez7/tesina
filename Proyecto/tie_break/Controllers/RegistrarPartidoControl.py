@@ -8,6 +8,7 @@ class RegistrarPartidoControlador(object):
     def __init__(self, page: Page):
         self.page = page
         self.modelo = RegistrarPartidoModel(self.page.session.get("equipo"), self.page.session.get("equipoContrario"))
+        self.modelo.setPartido(self.page.session.get("partidoRegistrado"))
         self.vista = None
 
     def iniciarVista(self):
@@ -15,6 +16,7 @@ class RegistrarPartidoControlador(object):
         self.vista = RegistrarPartidoVista(self.page)
         self.page.vertical_alignment = "start"
         self.page.add(self.vista)
+        #self.vista.iniciarPartido()
 
     def obtenerNombreEquipoPropio(self):
         return self.modelo.getNombreEquipoPropio()
@@ -62,3 +64,6 @@ class RegistrarPartidoControlador(object):
             return " remata"
         if abreviatura == "B":
             return " bloquea"
+
+    def agregarSet(self, set):
+        self.modelo.agregarSet(set)
