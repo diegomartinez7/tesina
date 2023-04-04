@@ -69,6 +69,9 @@ class MenuEquipoControlador(object):
     def insertarJugador(self, jug: {}):
         return self.modelo.insertarJugador(jug)
 
+    def asociarJugador(self, idJugador):
+        return self.modelo.asociarJugador(idJugador)
+
     def editarJugador(self, jugador):
         self.modelo.editarJugador(jugador)
 

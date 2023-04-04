@@ -1,7 +1,9 @@
 from Models.Entidades.Equipo import Equipo
 from Models.Entidades.Jugadores.Jugador import Jugador
 from Models.Entidades.Competencia import Competencia
+from Models.Entidades.Jugadores.JugadorPropio import JugadorPropio
 from Models.Entidades.Partido import Partido
+import requests
 
 
 class MenuEquipoModel(object):
@@ -17,15 +19,57 @@ class MenuEquipoModel(object):
         nombre = jugador.get("nombre")
         genero = self.equipo.obtenerGeneroEquipo()
         posicion = jugador.get("posicion")
-        numero = int(jugador.get("numero"))
+        numero = int(jugador.get("no_jugador"))
         capitan = jugador.get("capitan")
+
         nuevoJugador = Jugador(nombre, genero, posicion, numero, capitan)
+
         if self.equipo.checarJugadorRepetido(nuevoJugador):
-            return False
+            return 0
         else:
-            print(jugador)
-            self.equipo.insertarJugador(nuevoJugador)
-            return True
+            url = "http://localhost:3000/api/jugadores"
+
+            jugadorJSN = {
+                "capitan": jugador.get("capitan"),
+                "genero": self.equipo.obtenerGeneroEquipo(),
+                "lesiones": False,
+                "no_jugador": int(jugador.get("no_jugador")),
+                "nombre": jugador.get("nombre"),
+                "posicion": jugador.get("posicion"),
+                "titular": False
+            }
+
+            respuesta = requests.post(url, json=jugadorJSN)
+            print(f"Jugador creado con resultado: {respuesta.text}")
+
+            if respuesta.status_code == 200:
+                return respuesta.json().get("id")
+            else:
+                return 0
+
+    def asociarJugador(self, idJugador: int):
+        idEquipo = self.equipo.getId()
+        url = f"http://localhost:3000/api/equipos/{idEquipo}/jugadorPropio/{idJugador}"
+        respuesta = requests.put(url)
+        print(f"Jugador asociado con resultado: {respuesta}")
+        return respuesta
+
+    # def crearJugadorRespuesta(self, respuesta: {}):
+    #     id = respuesta.get("id")
+    #     nombre = respuesta.get("nombre")
+    #     capitan = respuesta.get("capitan")
+    #     genero = respuesta.get("genero")
+    #     posicion = respuesta.get("posicion")
+    #     numero = respuesta.get("no_jugador")
+    #     lesiones = respuesta.get("lesiones")
+    #     titular = respuesta.get("titular")
+    #
+    #     nuevoJugador = JugadorPropio(nombre, genero, posicion, numero, capitan)
+    #     nuevoJugador.setId(id)
+    #     nuevoJugador.setLesion(lesiones)
+    #     nuevoJugador.setTitular(titular)
+    #
+    #     return nuevoJugador
 
     def editarJugador(self, jugador):
         self.equipo.editarJugador(jugador)
