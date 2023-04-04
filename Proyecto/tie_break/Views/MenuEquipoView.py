@@ -6,6 +6,7 @@ from Views.VistasMenuEquipo.CicloDePreparacionView import CicloDePreparacionVist
 from Views.VistasMenuEquipo.CompetenciasYPartidosView import CompetenciasYPartidosVista
 from Views.VistasMenuEquipo.EquiposRivalesView import EquiposRivalesVista
 from Views.VistasMenuEquipo.JugadoresView import JugadoresVista
+from Views.VistasMenuEquipo.NuevoPartidoView import NuevoPartidoView
 
 
 class MenuEquipoVista(UserControl):
@@ -217,6 +218,12 @@ class MenuEquipoVista(UserControl):
 
     def registrarPartidoOnClick(self, e):
         self.setOpcionSeleccionada(e.control.content.value)
+        registroPartido = NuevoPartidoView(self.pagina)
+        self.containerContenidoSeleccionado.content = registroPartido
+        self.update()
+        #from Controllers.MenuEquipoControl import MenuEquipoControlador
+        #controlador = MenuEquipoControlador(self.pagina)
+        #controlador.registrarPartido()
 
     def registrarEntrenamientoOnClick(self, e):
         self.setOpcionSeleccionada(e.control.content.value)

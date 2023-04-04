@@ -4,14 +4,20 @@ from flet.buttons import RoundedRectangleBorder
 
 
 class RegistroVista(UserControl):
-    #def __init__(self, controlador: RegistroControlador):
     def __init__(self, page: Page):
         super().__init__()
-        #self.controlador = controlador
         self.pagina = page
+        self.inputNombre = None
+        self.inputApellido = None
+        self.inputNombreUsuario = None
+        self.inputPassword = None
+        self.inputConfirmarPassword = None
+        self.inputRolUsuario = None
+        self.dialogResultados: AlertDialog = None
 
     def build(self):
         self.expand = True
+        self.configurarDialog()
         return self.inicializarComponentes()
 
     def inicializarComponentes(self):
@@ -59,7 +65,7 @@ class RegistroVista(UserControl):
             font_family="Nunito"
         )
 
-        inputNombre = TextField(
+        self.inputNombre = TextField(
             color="#001f60",
             text_size=16,
             border_radius=12.5,
@@ -68,7 +74,7 @@ class RegistroVista(UserControl):
             focused_border_color="#001f60",
             content_padding=15
         )
-        inputApellido = TextField(
+        self.inputApellido = TextField(
             color="#001f60",
             text_size=16,
             border_radius=12.5,
@@ -77,7 +83,7 @@ class RegistroVista(UserControl):
             focused_border_color="#001f60",
             content_padding=15
         )
-        inputNombreUsuario = TextField(
+        self.inputNombreUsuario = TextField(
             color="#001f60",
             text_size=16,
             border_radius=12.5,
@@ -86,7 +92,7 @@ class RegistroVista(UserControl):
             focused_border_color="#001f60",
             content_padding=15
         )
-        inputPassword = TextField(
+        self.inputPassword = TextField(
             password=True,
             can_reveal_password=True,
             color="#001f60",
@@ -97,7 +103,7 @@ class RegistroVista(UserControl):
             focused_border_color="#001f60",
             content_padding=15
         )
-        inputConfirmarPassword = TextField(
+        self.inputConfirmarPassword = TextField(
             password=True,
             can_reveal_password=True,
             color="#001f60",
@@ -108,7 +114,7 @@ class RegistroVista(UserControl):
             focused_border_color="#001f60",
             content_padding=15
         )
-        inputRolUsuario = Dropdown(
+        self.inputRolUsuario = Dropdown(
             width=300,
             options=[
                 dropdown.Option("Entrenador"),
@@ -144,32 +150,32 @@ class RegistroVista(UserControl):
         )
 
         containerInputNombre = Container(
-            content=inputNombre,
+            content=self.inputNombre,
             bgcolor=colors.WHITE,
             border_radius=12.5
         )
         containerInputApellido = Container(
-            content=inputApellido,
+            content=self.inputApellido,
             bgcolor=colors.WHITE,
             border_radius=12.5
         )
         containerInputNombreUsuario = Container(
-            content=inputNombreUsuario,
+            content=self.inputNombreUsuario,
             bgcolor=colors.WHITE,
             border_radius=12.5
         )
         containerInputRol = Container(
-            content=inputRolUsuario,
+            content=self.inputRolUsuario,
             bgcolor=colors.WHITE,
             border_radius=12.5
         )
         containerPassword = Container(
-            content=inputPassword,
+            content=self.inputPassword,
             bgcolor=colors.WHITE,
             border_radius=12.5
         )
         containerConfirmarPassword = Container(
-            content=inputConfirmarPassword,
+            content=self.inputConfirmarPassword,
             bgcolor=colors.WHITE,
             border_radius=12.5
         )
@@ -271,12 +277,80 @@ class RegistroVista(UserControl):
 
         return containerVistaRegistro
 
+    def configurarDialog(self):
+        self.dialogResultados = AlertDialog(
+            modal=True,
+            title=Text("Añadir Jugador", text_align="center", color="#001f60"),
+            content=Text("Aquí va el contenido del dialog"),
+            actions=[
+                TextButton(content=Text("Aceptar", color="#00BC06")),
+                TextButton(content=Text("Cancelar", color="#d50037"))
+            ],
+            actions_alignment="center"
+        )
+        self.pagina.dialog = self.dialogResultados
+
+    def iniciarDialogError(self, msg):
+        self.dialogResultados.title = Text("¡Error!", text_align="center", color="#d50037")
+        self.dialogResultados.content = Text(msg, text_align="center", size=20)
+        self.dialogResultados.actions = [
+            TextButton(content=Text("Aceptar", color="#001f60"), on_click=self.cerrarDialog)
+        ]
+
+    def iniciarDialogExito(self, msg):
+        self.dialogResultados.title = Icon(name=icons.DONE, color="#00BC06")
+        self.dialogResultados.content = Text(msg, text_align="center", size=20)
+        self.dialogResultados.actions = [
+            TextButton(content=Text("Aceptar", color="#001f60"), on_click=self.cerrarDialog)
+        ]
+
+    def abrirErrorDialog(self, msg):
+        self.iniciarDialogError(msg)
+        self.dialogResultados.open = True
+        self.pagina.update()
+
+    def abrirDialogExito(self, msg):
+        self.iniciarDialogExito(msg)
+        self.dialogResultados.open = True
+        self.pagina.update()
+
+    def cerrarDialog(self, e):
+        self.dialogResultados.open = False
+        self.pagina.update()
+
     def clickRegistrarse(self, e):
-        from Controllers.RegistroControl import RegistroControlador
-        controlador = RegistroControlador(self.pagina)
-        controlador.registrarse()
+        usuario = {
+            "nombre": self.inputNombre.value,
+            "apellido": self.inputApellido.value,
+            "usuario": self.inputNombreUsuario.value,
+            "rol": self.inputRolUsuario.value if self.inputRolUsuario.value is not None else "",
+            "password": self.inputPassword.value
+        }
+        if not self.validarUsuarioVacio(usuario):
+            if self.validarPasswords():
+                from Controllers.RegistroControl import RegistroControlador
+                controlador = RegistroControlador(self.pagina)
+                controlador.registrarUsuario(usuario)
+                self.abrirDialogExito("Usuario registrado con éxito")
+                controlador.registrarse()
+            else:
+                self.abrirErrorDialog("Las contraseñas no son iguales")
+        else:
+            self.abrirErrorDialog("No puede haber campos vacíos")
 
     def clickRegresar(self, e):
         from Controllers.RegistroControl import RegistroControlador
         controlador = RegistroControlador(self.pagina)
         controlador.regresar()
+
+    def validarUsuarioVacio(self, usuario: {}):
+        from Controllers.RegistroControl import RegistroControlador
+        controlador = RegistroControlador(self.pagina)
+        return controlador.validarUsuarioVacio(usuario)
+
+    def validarPasswords(self):
+        password = self.inputPassword.value
+        confirmacionPassword = self.inputConfirmarPassword.value
+        from Controllers.RegistroControl import RegistroControlador
+        controlador = RegistroControlador(self.pagina)
+        return controlador.validarPasswords(password, confirmacionPassword)

@@ -1,11 +1,14 @@
 class Jugador:
-    def __init__(self, id, nombre, genero, posicion, noJugador, capitan):
-        self.id: int = id
+    def __init__(self, nombre, genero, posicion, noJugador, capitan):
+        self.id: int = 0
         self.nombre: str = nombre
         self.genero: str = genero
         self.posicion: str = posicion
         self.noJugador: int = noJugador
         self.capitan: bool = capitan
+
+    def setId(self, id):
+        self.id = id
 
     def getId(self):
         return self.id

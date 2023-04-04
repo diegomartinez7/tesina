@@ -7,6 +7,19 @@ class LoginVista(UserControl):
     def __init__(self, page: Page):
         super().__init__()
         self.pagina = page
+        self.dialogInfo = AlertDialog(
+            modal=True,
+            title=Text("¡Hola!", color="#001f60", text_align="center"),
+            content=Text(
+                value="informacionSistema",
+                color="#001f60"
+            ),
+            actions=[
+                TextButton("Aceptar", on_click=self.cerrarDialog)
+            ],
+            actions_alignment="center",
+            on_dismiss=self.cerrarDialog
+        )
         self.inputUsuario = TextField(
             color="#001f60",
             text_size=16,
@@ -81,7 +94,8 @@ class LoginVista(UserControl):
         buttonInfo = IconButton(
             icon=icons.INFO_OUTLINED,
             icon_color="#001f60",
-            icon_size=36
+            icon_size=36,
+            on_click=self.clickInfo
         )
 
         containerLabelUsuario = Container(
@@ -145,6 +159,24 @@ class LoginVista(UserControl):
 
         return containerLoginVista
 
+    def clickInfo(self, e):
+        informacionSistema = "Este sistema fue desarrollado por Sergio Ruvalcaba Lozano y Christopher Diego Martínez " \
+                             "Bernal \ncomo proyecto integrador de los conocimientos adquiridos en la carrera de " \
+                             "Ingeniería en Sistemas Computacionales.\n\n" \
+                             "El objetivo del sistema es proveer a entrenadores de voleibol de herramietnas que " \
+                             "faciliten la gestión de sus equipos \ny la recolección de información durante los " \
+                             "juegos que estos disputen, para así tener información que permita tomar " \
+                             "\nlas mejores decisiones."
+
+        self.dialogInfo.content = Text(
+            value=informacionSistema,
+            color="#001f60",
+            text_align="center"
+        )
+        self.pagina.dialog = self.dialogInfo
+        self.dialogInfo.open = True
+        self.pagina.update()
+
     def clickRegistro(self, e):
         from Controllers.LoginControl import LoginControlador
         controlador = LoginControlador(self.pagina)
@@ -163,7 +195,6 @@ class LoginVista(UserControl):
         else:
             if controlador.revisarCredenciales(self.inputUsuario.value, self.inputPassword.value):
                 self.update()
-                self.pagina.session.set("usuario", self.inputUsuario.value)
                 controlador.iniciarSesion()
             else:
                 self.errorUsuario()
@@ -182,3 +213,7 @@ class LoginVista(UserControl):
         self.labelMensajeError.value = mensaje
         self.labelMensajeError.visible = True
         self.update()
+
+    def cerrarDialog(self, e):
+        self.dialogInfo.open = False
+        self.pagina.update()

@@ -358,11 +358,21 @@ class JugadoresVista(UserControl):
         posicion = self.inputPosicion.value
         capitan = self.inputCapitan.value
 
+        # jugador = {
+        #     "numero": numero,
+        #     "nombre": nombre,
+        #     "posicion": posicion,
+        #     "capitan": capitan
+        # }
+
         jugador = {
-            "numero": numero,
             "nombre": nombre,
             "posicion": posicion,
-            "capitan": capitan
+            "capitan": capitan,
+            "genero": "",
+            "lesiones": False,
+            "no_jugador": numero,
+            "titular": False
         }
 
         from Controllers.MenuEquipoControl import MenuEquipoControlador
@@ -372,12 +382,17 @@ class JugadoresVista(UserControl):
         else:
             self.dialogEquipo.open = False
             self.pagina.update()
-            self.insertarJugador(jugador)
+            idJugador = controlador.insertarJugador(jugador)
+            if idJugador > 0:
+                if controlador.asociarJugador(idJugador):
+                    self.insertarJugador(True)
+                else:
+                    self.insertarJugador(False)
+            else:
+                self.insertarJugador(False)
 
-    def insertarJugador(self, jugador):
-        from Controllers.MenuEquipoControl import MenuEquipoControlador
-        controlador = MenuEquipoControlador(self.pagina)
-        if controlador.insertarJugador(jugador):
+    def insertarJugador(self, resultado):
+        if resultado:
             self.abrirDialogExito("Jugador agregado con éxito")
             self.obtenerContenedoresJugadores()
             self.update()

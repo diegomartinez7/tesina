@@ -359,7 +359,7 @@ class SeleccionarEquipoVista(UserControl):
                                     IconButton(
                                         icon=icons.DELETE,
                                         icon_color="#d50037",
-                                        on_click=self.borrarJugador,
+                                        on_click=self.abrirDialogBorrarJugador,
                                         data=jugador
                                     )
                                 ],
@@ -449,7 +449,6 @@ class SeleccionarEquipoVista(UserControl):
             self.pagina.update()
             self.editarJugador(jugador)
 
-
     def dialogError(self, msg: str):
         self.dialogEditarJugador.title = Text("¡Error!", text_align="center", color="#d50037")
         self.dialogEditarJugador.content = Text(msg, text_align="center", size=20)
@@ -466,16 +465,47 @@ class SeleccionarEquipoVista(UserControl):
         controlador = SeleccionarEquipoControlador(self.pagina)
         return controlador.obtenerEquipos()
 
+    def iniciarDialogBorrarJugador(self, jugador):
+        self.dialogEditarJugador = AlertDialog(
+            modal=True,
+            title=Icon(name=icons.WARNING, color="#ffa400"),
+            content=Text(f"¿Deseas borrar a {jugador.getNombre()}?", text_align="center", size=20),
+            actions=[
+                TextButton(content=Text("Aceptar", color="#001f60"), on_click=self.borrarJugador,
+                           data=jugador),
+                TextButton(content=Text("Cancelar", color="#001f60"), on_click=self.dialogEditarJugadorCancelado)
+            ],
+            actions_alignment="center"
+        )
+        self.pagina.dialog = self.dialogEditarJugador
+
+    def abrirDialogBorrarJugador(self, e):
+        jugador = e.control.data
+        self.iniciarDialogBorrarJugador(jugador)
+        self.dialogEditarJugador.open = True
+        self.pagina.update()
+
     def borrarJugador(self, e):
-        print(e.control.data.id)
-        self.equipoSeleccionado.borrarJugador(e.control.data.id)
-        self.obtenerContenedoresJugadores()
-        self.update()
+        from Controllers.SeleccionarEquipoControl import SeleccionarEquipoControlador
+        controlador = SeleccionarEquipoControlador(self.pagina)
+        if controlador.borrarJugador(e.control.data):
+            self.equipoSeleccionado.borrarJugador(e.control.data.id)
+            self.obtenerContenedoresJugadores()
+            self.update()
+            self.dialogEditarJugador.open = False
+            self.pagina.update()
+        else:
+            self.dialogError("No se pudo borrar el jugador")
 
     def editarJugador(self, jugador):
-        self.equipoSeleccionado.editarJugador(jugador)
-        self.obtenerContenedoresJugadores()
-        self.update()
+        from Controllers.SeleccionarEquipoControl import SeleccionarEquipoControlador
+        controlador = SeleccionarEquipoControlador(self.pagina)
+        if controlador.editarJugador(jugador) is not None:
+            self.equipoSeleccionado.editarJugador(jugador)
+            self.obtenerContenedoresJugadores()
+            self.update()
+        else:
+            self.dialogError("No se pudo editar el jugador")
 
     def regresar(self, e):
         from Controllers.SeleccionarEquipoControl import SeleccionarEquipoControlador

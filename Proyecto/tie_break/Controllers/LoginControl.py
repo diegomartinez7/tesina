@@ -28,7 +28,12 @@ class LoginControlador(object):
         registro.iniciarVista()
 
     def revisarCredenciales(self, usr, pswd):
-        return self.modelo.revisarCredenciales(usr, pswd)
+        respuesta = self.modelo.revisarCredenciales(usr, pswd)
+        if respuesta is not None:
+            self.page.session.set("usuario", respuesta)
+            return True
+        else:
+            return False
 
     def limpiarVista(self):
         self.page.controls.pop()
