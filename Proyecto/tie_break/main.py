@@ -44,6 +44,8 @@ def main(page: Page):
     #registrarPartido = RegistrarPartidoControlador(page)
     #registrarPartido.iniciarVista()
 
+    #menuEquipo = MenuEquipoControlador(page)
+    #menuEquipo.iniciarVista()
 
 
 def llamarLogin(page):
